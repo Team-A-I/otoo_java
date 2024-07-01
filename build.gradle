@@ -25,11 +25,13 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux' // WebClient를 사용하려면 필요합니다.
+    implementation 'org.springframework.boot:spring-boot-starter-webflux' // WebClient 를 사용하려면 필요합니다.
+    implementation 'com.fasterxml.jackson.core:jackson-databind' // JSON 처리를 위한
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
 }
 
 tasks.named('test') {
