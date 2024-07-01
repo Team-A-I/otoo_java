@@ -29,5 +29,4 @@ public class HelloController {
         }
         return "Hello, World! FastAPI Response: " + response;
     }
-
 }
