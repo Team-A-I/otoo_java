@@ -7,7 +7,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class AppConfig {
-
+//확인
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder.build();
