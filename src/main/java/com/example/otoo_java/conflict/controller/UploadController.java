@@ -1,4 +1,4 @@
-package com.example.otoo_java.controller;
+package com.example.otoo_java.conflict.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Value;
