@@ -1,4 +1,4 @@
-package com.example.otoo_java.controller;
+package com.example.otoo_java.talks.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +10,7 @@ import org.springframework.web.client.ResourceAccessException;
 
 // FastAPI 불러오는 예시
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api") //이게 루트 주소
 public class HelloController {
 
     @Autowired
@@ -29,6 +29,5 @@ public class HelloController {
         }
         return "Hello, World! FastAPI Response: " + response;
     }
-
 
 }
