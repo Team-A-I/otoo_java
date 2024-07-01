@@ -1,4 +1,4 @@
-package com.example.otoo_java.controller;
+package com.example.otoo_java.talks.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
