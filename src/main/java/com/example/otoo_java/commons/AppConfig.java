@@ -1,4 +1,4 @@
-package com.example.otoo_java.talks;
+package com.example.otoo_java.commons;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
