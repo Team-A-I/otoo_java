@@ -8,7 +8,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
-@RequestMapping("/upload")
+@RequestMapping("/api/conflict")
 public class UploadController {
 
     @Value("${fastapi.url}")
@@ -17,7 +17,7 @@ public class UploadController {
     @Value("${openai.api.key}")
     private String openaiApiKey;
 
-    @PostMapping
+    @PostMapping("/upload")
     public ResponseEntity<String> handleFileUpload(@RequestBody JsonNode jsonNode) {
         try {
             RestTemplate restTemplate = new RestTemplate();
