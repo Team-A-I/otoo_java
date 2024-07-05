@@ -10,12 +10,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/api/love")
 public class LoveController {
 
     @PostMapping("/upload")
     public ResponseEntity<Map<String, Object>> handleUpload(@RequestBody Map<String, Object> payload) {
         RestTemplate restTemplate = new RestTemplate();
-        String pythonServerUrl = "http://localhost:8001/process";
+        String pythonServerUrl = "http://localhost:8001/love";
 
         // 파이썬 서버로 전송
         ResponseEntity<String> response = restTemplate.postForEntity(pythonServerUrl, payload, String.class);
