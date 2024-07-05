@@ -14,17 +14,14 @@ public class UploadController {
     @Value("${fastapi.url}")
     private String fastApiUrl;
 
-    @Value("${openai.api.key}")
-    private String openaiApiKey;
-
     @PostMapping("/upload")
     public ResponseEntity<String> handleFileUpload(@RequestBody JsonNode jsonNode) {
         try {
             RestTemplate restTemplate = new RestTemplate();
 
             HttpHeaders headers = new HttpHeaders();
+
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Authorization", "Bearer " + openaiApiKey);
 
             HttpEntity<JsonNode> requestEntity = new HttpEntity<>(jsonNode, headers);
 
