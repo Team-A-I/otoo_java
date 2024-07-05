@@ -25,6 +25,6 @@ public class Talks {
     private String talksPlayer;
 
     @ManyToOne
-    @JoinColumn(name = "users_id") // 외래 키 설정
+    @JoinColumn(name = "users_id") //외래 키 설정
     private Users users;
 }
