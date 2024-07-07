@@ -1,6 +1,6 @@
 package com.example.otoo_java.chatbot.entity;
 
-import com.example.otoo_java.users.entity.Users;
+import com.example.otoo_java.users.model.entity.Users;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +29,6 @@ public class EmotionReports {
     private String emotionReportTitle;
 
     @ManyToOne
-    @JoinColumn(name = "users_id") // 외래 키 설정
+    @JoinColumn(name = "users_code") // 외래 키 설정
     private Users users;
 }
