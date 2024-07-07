@@ -1,21 +1,23 @@
-package com.example.otoo_java.users.entity;
+package com.example.otoo_java.users.model.dto;
 
-import jakarta.persistence.*;
+import com.example.otoo_java.enums.OAuthProvider;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-
-public class Users {
-    @Id
+@Builder
+public class UsersDto {
+    private String usersCode;
     private String usersId;
     private String usersPw;
     private String usersEmail;
     private String usersName;
     private String usersRole;
     private String usersBan;
+    private String usersGender;
+    private OAuthProvider oAuthProvider;
 }
