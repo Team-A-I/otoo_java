@@ -161,9 +161,6 @@ public class AccountService {
         log.info("id = " + id);
 
 
-
-
-
         String pwd = bCryptPasswordEncoder.encode(UUID.randomUUID().toString());
 
         return UsersDto.builder()
