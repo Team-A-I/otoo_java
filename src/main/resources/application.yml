@@ -66,4 +66,7 @@ fast:
 fastapi:
   url: http://localhost:8001/conflict
 
+server:
+  port: 8080
+
 

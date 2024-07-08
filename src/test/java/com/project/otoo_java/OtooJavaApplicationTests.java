@@ -1,4 +1,4 @@
-package com.example.otoo_java;
+package com.project.otoo_java;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
