@@ -27,3 +27,43 @@ data:
   redis:
     port: 6379
     host: localhost
+
+
+spring:
+  application:
+    name: otoo_java
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/otoo_db?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    username: otoo
+    password: 1234
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      properties:
+        hibernate:
+          format_sql: true
+          dialect: org.hibernate.dialect.MySQLDialect
+  mail:
+    host: smtp.naver.com
+    port: 587
+    username: gustjrl9208
+    password: qwer1234*0
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            trust: smtp.naver.com
+
+fast:
+  url: http://localhost:8000/process
+
+fastapi:
+  url: http://localhost:8001/conflict
+
+
