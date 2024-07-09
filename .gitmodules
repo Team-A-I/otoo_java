@@ -1,0 +1,3 @@
+[submodule "otoo_submodule"]
+	path = otoo_submodule
+	url = https://github.com/Team-A-I/otoo_submodule.git
