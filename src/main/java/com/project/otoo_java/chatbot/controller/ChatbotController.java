@@ -74,10 +74,10 @@ public class ChatbotController {
             if (usersCode != null) {
                 EmotionReportsDto emotionReportsDto = new EmotionReportsDto();
                 emotionReportsDto.setUsersCode(usersCode);
-                emotionReportsDto.setEmotionReportKor(response.getBody());
+                emotionReportsDto.setEmotionReportKor(response.getBody().substring(1, response.getBody().length() - 1));
 
                 if (response.getBody().length() > 11) {
-                    emotionReportsDto.setEmotionReportTitle(response.getBody().substring(1, 11));
+                    emotionReportsDto.setEmotionReportTitle(response.getBody().substring(1, 11) + "...");
                 } else {
                     emotionReportsDto.setEmotionReportTitle(response.getBody());
                 }
