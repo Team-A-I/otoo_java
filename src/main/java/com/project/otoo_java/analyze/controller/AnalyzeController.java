@@ -26,7 +26,7 @@ public class AnalyzeController {
         return sendPostRequestToFastAPI(jsonContent, "love");
     }
 
-    @PostMapping("/love/friendship")
+    @PostMapping("/friendship/analysis")
     public ResponseEntity<String> analyzeFriendship(@RequestBody Map<String, Object> jsonContent) {
         return sendPostRequestToFastAPI(jsonContent, "friendship");
     }
