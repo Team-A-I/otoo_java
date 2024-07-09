@@ -19,7 +19,7 @@ public class ChatbotController {
     public String chatbot(@RequestParam(required = false) String user_id, @RequestBody Map<String, Object> payload) {
         List RecentMessages = (List) payload.get("RecentMessages");
         String mode = (String) payload.get("mode");
-        String url = "http://localhost:8001/chatbot";
+        String url = "http://python-fastapi:8001/chatbot";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -44,7 +44,7 @@ public class ChatbotController {
     public String emotionReport(@RequestParam(required = false) String user_id, @RequestBody Map<String, Object> payload) {
         List messages = (List) payload.get("messages");
         log.info(messages.toString());
-        String url = "http://localhost:8001/emotionReport";
+        String url = "http://python-fastapi:8001/emotionReport";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 

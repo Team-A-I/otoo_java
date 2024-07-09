@@ -14,7 +14,7 @@ import java.util.Map;
 @RequestMapping("/api")
 public class AnalyzeController {
 
-    private static final String FASTAPI_URL = "http://localhost:8001/analyze";
+    private static final String FASTAPI_URL = "http://python-fastapi:8001/analyze";
 
     @PostMapping("/conflict/analysis")
     public ResponseEntity<String> analyzeConflict(@RequestBody Map<String, Object> jsonContent) {
@@ -26,7 +26,7 @@ public class AnalyzeController {
         return sendPostRequestToFastAPI(jsonContent, "love");
     }
 
-    @PostMapping("/love/friendship")
+    @PostMapping("/friendship/analysis")
     public ResponseEntity<String> analyzeFriendship(@RequestBody Map<String, Object> jsonContent) {
         return sendPostRequestToFastAPI(jsonContent, "friendship");
     }
