@@ -64,7 +64,7 @@ public class SecurityConfig {
         corsConfiguration.setAllowedOriginPatterns(Arrays.asList("*"));
         corsConfiguration.addAllowedOrigin("http://localhost:8080");
         corsConfiguration.addAllowedOrigin("http://localhost:3000");
-        corsConfiguration.addAllowedOrigin("http://localhost:8001");
+        corsConfiguration.addAllowedOrigin("http://python-fastapi:8001");
         corsConfiguration.addAllowedOrigin("https://team-a-i.github.io");
         corsConfiguration.addAllowedOriginPattern("*");
         corsConfiguration.setAllowedMethods(Arrays.asList("POST", "GET", "DELETE", "PUT", "PATCH"));
@@ -93,7 +93,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((auth) -> auth
                         //react 구성 요소
-                        .requestMatchers("/assets/**", "/js/**", "/fonts/**", "/favicon.ico", "/loader.css", "/ooto_react/**", "/team-a-i.github.io/**").permitAll()
+                        .requestMatchers("/assets/**", "/js/**", "/fonts/**", "/favicon.ico", "/ooto_react/**", "/team-a-i.github.io/**").permitAll()
                         //swagger
                         .requestMatchers(PERMIT_URL_ARRAY).permitAll()
                         //LoginPermit

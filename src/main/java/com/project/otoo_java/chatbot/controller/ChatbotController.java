@@ -28,7 +28,7 @@ public class ChatbotController {
         try {
             List recentMessages = (List) payload.get("RecentMessages");
             String mode = (String) payload.get("mode");
-            String url = "http://localhost:8001/chatbot";
+            String url = "http://python-fastapi:8001/chatbot";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -68,7 +68,7 @@ public class ChatbotController {
         try {
             List messages = (List) payload.get("messages");
             String usersCode = (String) payload.get("usersCode");
-            String url = "http://localhost:8001/emotionReport";
+            String url = "http://python-fastapi:8001/emotionReport";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
