@@ -1,5 +1,9 @@
 package com.project.otoo_java.analyze.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.otoo_java.analyze.dto.AnalyzeDto;
+import com.project.otoo_java.analyze.service.AnalyzeService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -14,14 +18,21 @@ import org.springframework.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Iterator;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
 public class AnalyzeController {
 
+    private final AnalyzeService analyzeService;
+
     private static final String FASTAPI_URL = "http://localhost:8001/analyze";
     private static final Logger logger = LoggerFactory.getLogger(AnalyzeController.class);
+
+    public AnalyzeController(AnalyzeService analyzeService) { // 생성자 추가
+        this.analyzeService = analyzeService;
+    }
 
     @PostMapping("/conflict/analysis")
     public ResponseEntity<String> analyzeConflict(@RequestBody Map<String, Object> jsonContent) {
@@ -43,12 +54,14 @@ public class AnalyzeController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // JSON 요청 본문에 type을 추가
         jsonContent.put("type", type);
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(jsonContent, headers);
 
         try {
+            String talksMessage = (String) jsonContent.get("text");
+            String usersCode = (String) jsonContent.get("usercode");
+            String talksType = (String) jsonContent.get("type");
             ResponseEntity<String> response = restTemplate.exchange(
                     FASTAPI_URL,
                     HttpMethod.POST,
@@ -56,7 +69,30 @@ public class AnalyzeController {
                     String.class
             );
             logger.info("FastAPI 응답 성공: {}", response.getStatusCode());
+            if (usersCode != null) {
+                AnalyzeDto analyzeDto = new AnalyzeDto();
+                analyzeDto.setUsersCode(usersCode);
+                analyzeDto.setTalksMessage(talksMessage);
+                analyzeDto.setTalksType(talksType);
+
+                // JSON 응답에서 response 값을 추출
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode jsonResponse = objectMapper.readTree(response.getBody());
+
+                // response 내용을 다시 파싱
+                String responseContent = jsonResponse.path("response").asText();
+                JsonNode parsedResponse = objectMapper.readTree(responseContent.replace("```json\n", "").replace("```", ""));
+                JsonNode totalScoreNode = parsedResponse.path("total_score");
+                Iterator<String> fieldNames = totalScoreNode.fieldNames();
+                String player1 = fieldNames.hasNext() ? fieldNames.next() : null;
+                String player2 = fieldNames.hasNext() ? fieldNames.next() : null;
+
+                analyzeDto.setTalksPlayer(player1 + ", " + player2);
+                analyzeDto.setTalksResult(parsedResponse.toString());
+                analyzeService.insertAnalyze(analyzeDto);
+            }
             return response;
+
         } catch (HttpClientErrorException e) {
             logger.error("클라이언트 오류: {}", e.getMessage());
             return ResponseEntity.status(e.getStatusCode()).body("요청 처리 중 오류가 발생했습니다: " + e.getStatusText());
