@@ -25,6 +25,8 @@ public interface UsersRepository extends JpaRepository<Users, String> {
     @Query("UPDATE Users m Set m.usersBan = :usersBan WHERE m.usersCode = :usersCode")
     void updateStatus(@Param("usersCode") String usersId, @Param("usersBan") String usersBan);
 
+
+
     List<Users> findByUsersRoleNot(String usersRole);
 
 }
