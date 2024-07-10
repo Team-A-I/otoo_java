@@ -67,3 +67,21 @@ tasks.register('copySecret', Copy) {
     include "application*.yml"  // 복사할 파일들
     into 'src/main/resources'  // 복사 위치
 }
+
+test {
+    useJUnitPlatform()
+    systemProperty "JWT_SECRET_KEY", System.getenv("JWT_SECRET_KEY")
+    systemProperty "OAUTH_KAKAO_CLIENT_ID", System.getenv("OAUTH_KAKAO_CLIENT_ID")
+    systemProperty "OAUTH_NAVER_CLIENT_ID", System.getenv("OAUTH_NAVER_CLIENT_ID")
+    systemProperty "OAUTH_NAVER_CLIENT_SECRET", System.getenv("OAUTH_NAVER_CLIENT_SECRET")
+    systemProperty "OAUTH_GOOGLE_CLIENT_ID", System.getenv("OAUTH_GOOGLE_CLIENT_ID")
+    systemProperty "OAUTH_GOOGLE_CLIENT_SECRET", System.getenv("OAUTH_GOOGLE_CLIENT_SECRET")
+    systemProperty "SPRING_DATASOURCE_URL", System.getenv("SPRING_DATASOURCE_URL")
+    systemProperty "SPRING_DATASOURCE_USERNAME", System.getenv("SPRING_DATASOURCE_USERNAME")
+    systemProperty "SPRING_DATASOURCE_PASSWORD", System.getenv("SPRING_DATASOURCE_PASSWORD")
+    systemProperty "SPRING_MAIL_USERNAME", System.getenv("SPRING_MAIL_USERNAME")
+    systemProperty "SPRING_MAIL_PASSWORD", System.getenv("SPRING_MAIL_PASSWORD")
+    systemProperty "FASTAPI_URL", System.getenv("FASTAPI_URL")
+    systemProperty "REDIS_HOST", System.getenv("REDIS_HOST")
+    systemProperty "REDIS_PORT", System.getenv("REDIS_PORT")
+}
