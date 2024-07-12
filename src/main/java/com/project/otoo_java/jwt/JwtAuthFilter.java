@@ -35,12 +35,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 jwtExceptionHandler(response, "REISSUE", HttpStatus.SEE_OTHER);
                 return;
             }
-        } else if (refreshToken != null) {
-            if (jwtUtil.refreshTokenValidation(refreshToken)) {
-                setAuthentication(jwtUtil.getEmailFromToken(refreshToken));
-            }
         }
-
         filterChain.doFilter(request, response);
     }
 

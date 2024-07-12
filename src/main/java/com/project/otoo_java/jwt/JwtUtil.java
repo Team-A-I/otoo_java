@@ -1,7 +1,5 @@
 package com.project.otoo_java.jwt;
 import com.project.otoo_java.auth.PrincipalDetailsService;
-import com.project.otoo_java.redis.entity.RedisRefreshToken;
-import com.project.otoo_java.redis.repository.RedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -25,8 +23,6 @@ import java.util.Optional;
 public class JwtUtil {
 
     private final PrincipalDetailsService principalDetailsService;
-
-    private final RedisRepository redisRepository;
 
 
     private static final long ACCESS_TIME = 24 * 60 * 60 * 1000L; // 1일 24 * 60 * 60 * 1000L;
@@ -125,16 +121,6 @@ public class JwtUtil {
         }
     }
 
-    // refreshToken 토큰 검증
-    public Boolean refreshTokenValidation(String token) {
-        // 1차 토큰 검증
-        if (!tokenValidation(token)) return false;
-
-        // DB에 저장한 토큰 비교
-        Optional<RedisRefreshToken> refreshToken = redisRepository.findById(getEmailFromToken(token));
-
-        return refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken().substring(7));
-    }
 
     // 인증 객체 생성
     public Authentication createAuthentication(String email) {
