@@ -20,7 +20,7 @@ import java.util.Map;
 @RequestMapping("/api")
 public class AnalyzeController {
 
-    private static final String FASTAPI_URL = "http://python-fastapi:8001/analyze";
+    private static final String FASTAPI_URL = "http://otoo-load-balancer-fastapi-571007349.ap-northeast-2.elb.amazonaws.com:8001/analyze";
     private static final Logger logger = LoggerFactory.getLogger(AnalyzeController.class);
 
     @PostMapping("/conflict/analysis")

@@ -64,7 +64,7 @@ public class SecurityConfig {
         corsConfiguration.setAllowedOriginPatterns(Arrays.asList("*"));
         corsConfiguration.addAllowedOrigin("http://localhost:8080");
         corsConfiguration.addAllowedOrigin("http://localhost:3000");
-        corsConfiguration.addAllowedOrigin("http://python-fastapi:8001");
+        corsConfiguration.addAllowedOrigin("http://otoo-load-balancer-fastapi-571007349.ap-northeast-2.elb.amazonaws.com:8001");
         corsConfiguration.addAllowedOrigin("https://team-a-i.github.io");
         corsConfiguration.addAllowedOriginPattern("*");
         corsConfiguration.setAllowedMethods(Arrays.asList("POST", "GET", "DELETE", "PUT", "PATCH"));
