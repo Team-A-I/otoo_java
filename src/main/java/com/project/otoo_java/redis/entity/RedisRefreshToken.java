@@ -1,15 +1,18 @@
 package com.project.otoo_java.redis.entity;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
 import java.util.concurrent.TimeUnit;
 
-@Data
-@RedisHash("refresh")
+
 @NoArgsConstructor
+@Getter
+@RedisHash("refreshToken")
 public class RedisRefreshToken {
     @Id
     private String id;

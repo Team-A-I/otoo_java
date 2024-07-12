@@ -10,6 +10,7 @@ import com.project.otoo_java.login.dto.UserResponseDto;
 import com.project.otoo_java.users.model.dto.UsersDto;
 import com.project.otoo_java.users.model.entity.Users;
 import com.project.otoo_java.users.model.repository.UsersRepository;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -51,6 +52,7 @@ public class AccountService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final JwtUtil jwtUtil;
+    private final RedisTemplate redisTemplate;
 
     @Value("${oauth.naver.client_id}")
     private String naverClientId;
@@ -105,7 +107,7 @@ public class AccountService {
 
             TokenDto tokenDto = jwtUtil.createAllToken(usersEntity.getUsersEmail());
             setHeader(res, tokenDto);
-
+            redisTemplate.opsForValue().set("JWT_TOKEN:" + usersEntity.getUsersEmail(), tokenDto);
             return new UserResponseDto(usersEntity);
 
         } catch (NotFoundException e) {
@@ -127,6 +129,7 @@ public class AccountService {
 
         TokenDto tokenDto = jwtUtil.createAllToken(users.getUsersEmail());
         setHeader(res, tokenDto);
+        redisTemplate.opsForValue().set("JWT_TOKEN:" + users.getUsersEmail(), tokenDto);
 
         return new UserResponseDto(users);
     }
@@ -160,11 +163,12 @@ public class AccountService {
         Long id = jsonNode.get("id").asLong();
         log.info("id = " + id);
 
-
+        String uuid = UUID.randomUUID().toString();
         String pwd = bCryptPasswordEncoder.encode(UUID.randomUUID().toString());
 
         return UsersDto.builder()
                 .usersPw(pwd)
+                .usersEmail(uuid)
                 .usersId(id.toString())
                 .usersRole("ROLE_USER")
                 .oAuthProvider(OAuthProvider.KAKAO)
@@ -211,6 +215,7 @@ public class AccountService {
 
         TokenDto tokenDto = jwtUtil.createAllToken(users.getUsersEmail());
         setHeader(res, tokenDto);
+        redisTemplate.opsForValue().set("JWT_TOKEN:" + users.getUsersEmail(), tokenDto);
 
         return new UserResponseDto(users);
     }
@@ -330,6 +335,7 @@ public class AccountService {
 
         TokenDto tokenDto = jwtUtil.createAllToken(users.getUsersEmail());
         setHeader(res, tokenDto);
+        redisTemplate.opsForValue().set("JWT_TOKEN:" + users.getUsersEmail(), tokenDto);
 
         return new UserResponseDto(users);
     }
@@ -408,6 +414,10 @@ public class AccountService {
             return null;
         }
 
+    }
+    public void logout(String email) {
+        // Redis에서 리프레시 토큰 삭제
+        redisTemplate.delete("JWT_TOKEN:" + email);
     }
 
 }

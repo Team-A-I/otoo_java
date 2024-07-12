@@ -5,6 +5,7 @@ import com.project.otoo_java.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,6 +18,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter;
 
 
 import java.util.Arrays;
@@ -27,12 +29,16 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final HttpRequestHandlerAdapter httpRequestHandlerAdapter;
 
     private static final String[] PERMIT_URL_ARRAY = {
             /* swagger v3 */
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-resources/**",
+
+            "/set/",
 
             "/member/**",
             "/email/**",
@@ -78,7 +84,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
+        JwtAuthFilter jwtAuthFilter = new JwtAuthFilter(jwtUtil, redisTemplate,httpRequestHandlerAdapter);
 
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(Customizer.withDefaults());
@@ -90,6 +96,7 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
+
                 .authorizeHttpRequests((auth) -> auth
                         //react 구성 요소
                         .requestMatchers("/assets/**", "/js/**", "/fonts/**", "/favicon.ico", "/loader.css", "/ooto_react/**").permitAll()
@@ -101,7 +108,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 );
 
-        http.addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
