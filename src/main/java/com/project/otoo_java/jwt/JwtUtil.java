@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 import java.security.Key;
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -27,7 +28,6 @@ public class JwtUtil {
     private final PrincipalDetailsService principalDetailsService;
 
     private final RedisRepository redisRepository;
-
 
     private static final long ACCESS_TIME = 24 * 60 * 60 * 1000L; // 1일 24 * 60 * 60 * 1000L;
     public static final long REFRESH_TIME = 7 * 24 * 60 * 60 * 1000L; // 7일
@@ -53,12 +53,11 @@ public class JwtUtil {
 
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
 
-            log.info(bearerToken);
-
             return bearerToken.substring(7);
         }
         return null;
     }
+
 
     // 토큰 생성
     public TokenDto createAllToken(String email) {
@@ -70,32 +69,49 @@ public class JwtUtil {
         Date date = new Date();
 
         long time = type.equals("Access") ? ACCESS_TIME : REFRESH_TIME;
+        String uniqueId = UUID.randomUUID().toString();
 
         Claims claims = Jwts.claims()
                 .setSubject(email)
+                .setId(uniqueId)
                 .setIssuedAt(date) //생성일 설정
                 .setExpiration(new Date(date.getTime() + time)); //만료일 설정
 
-
-        return Jwts.builder()
+        log.info("Claims: " + claims);
+        String token = Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setClaims(claims)
-//                .setSubject(email)
-//                .setExpiration(new Date(date.getTime() + time))
-//                .setIssuedAt(date)
                 .signWith(key, signatureAlgorithm)
                 .compact();
+
+        // 생성된 토큰 로그에 출력
+        log.info("Generated Token: " + token);
+
+        return token;
 
     }
 
     // 토큰 검증
-    public Boolean tokenValidation(String token) {
+    public boolean tokenValidation(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
+        } catch (JwtException | IllegalArgumentException e) {
+            log.error("Invalid JWT token: {}", e.getMessage());
             return false;
+        }
+    }
+    public Date getExpirationDateFromToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims.getExpiration();
+        } catch (Exception e) {
+            log.error("JWT signature does not match locally computed signature: {}", e.getMessage());
+            throw e;
         }
     }
 

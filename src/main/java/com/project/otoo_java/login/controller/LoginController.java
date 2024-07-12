@@ -10,10 +10,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +24,9 @@ public class LoginController {
 
     private final AccountService accountService;
     private final JwtUtil jwtUtil;
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     @Operation(summary = "로그인", description = "자체 로그인 API")
     @PostMapping("/login")
@@ -81,5 +87,12 @@ public class LoginController {
         response.addHeader(JwtUtil.ACCESS_TOKEN, JwtUtil.BEARER_PREFIX + " " + jwtUtil.createToken(email, "Access"));
 
         return ResponseEntity.ok("재발급");
+    }
+    @PostMapping("/logoutUser")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        String email = request.getHeader("Authorization");
+        log.info("email: " + email);
+        redisTemplate.delete("JWT_TOKEN:" + email);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
