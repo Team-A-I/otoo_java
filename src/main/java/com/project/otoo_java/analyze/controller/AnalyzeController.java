@@ -62,6 +62,11 @@ public class AnalyzeController {
             String talksMessage = (String) jsonContent.get("text");
             String usersCode = (String) jsonContent.get("usercode");
             String talksType = (String) jsonContent.get("type");
+
+            if (usersCode == null) {
+                usersCode = "Non-members";
+            }
+
             ResponseEntity<String> response = restTemplate.exchange(
                     FASTAPI_URL,
                     HttpMethod.POST,
