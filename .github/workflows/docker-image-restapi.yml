@@ -10,7 +10,7 @@ env:
   ECR_REPOSITORY: otoo-restapi-repo
   ECS_SERVICE: otoo-service-restapi
   ECS_CLUSTER: otoo-cluster
-  ECS_TASK_DEFINITION: src/restapi-task-definition.json
+  ECS_TASK_DEFINITION: restapi-task-definition.json
   CONTAINER_NAME: otoo-restapi
 
 jobs:
