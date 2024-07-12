@@ -36,7 +36,7 @@ public class JwtUtil {
     public static String BEARER_PREFIX = "Bearer ";
 
 
-    @Value("${jwt.secretKey}")
+    @Value("${JWT_SECRET_KEY}")
     private String secretKey;
 
     private Key key;
