@@ -22,7 +22,7 @@ public class UsersService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Value("${oauth.kakao.client_id}")
+    @Value("${OAUTH_KAKAO_CLIENT_ID}")
     private String kakaoClientId;
 
     //로그인
