@@ -22,7 +22,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 public class OcrController {
-    @Value("{fastapi.url}")
+    @Value("{FASTAPI_URL}")
     private String FASTAPI_URL;
     private static final Logger logger = LoggerFactory.getLogger(OcrController.class);
 

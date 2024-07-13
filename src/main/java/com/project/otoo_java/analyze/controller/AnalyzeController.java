@@ -28,7 +28,7 @@ public class AnalyzeController {
 
     private final AnalyzeService analyzeService;
 
-    @Value("{fastapi.url}")
+    @Value("{FASTAPI_URL}")
     private String FASTAPI_URL;
     private static final Logger logger = LoggerFactory.getLogger(AnalyzeController.class);
 

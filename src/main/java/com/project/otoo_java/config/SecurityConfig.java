@@ -32,11 +32,11 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final RedisTemplate<String, Object> redisTemplate;
     private final HttpRequestHandlerAdapter httpRequestHandlerAdapter;
-    @Value("{fastapi.url}")
+    @Value("{FASTAPI_URL}")
     private String FASTAPI_URL;
-    @Value("{react.url}")
+    @Value("{REACT_URL}")
     private String REACT_URL;
-    @Value("{rest.url}")
+    @Value("{REST_URL}")
     private String REST_URL;
 
     private static final String[] PERMIT_URL_ARRAY = {
