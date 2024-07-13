@@ -11,6 +11,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,12 +27,19 @@ public class ChatbotController {
     @Value("${FASTAPI_URL}")
     private String FASTAPI_URL;
 
+    private RestTemplate createRestTemplate() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(5000); // 연결 타임아웃 5초
+        factory.setReadTimeout(5000); // 읽기 타임아웃 5초
+        return new RestTemplate(factory);
+    }
+
     @PostMapping("/chatbot")
     public ResponseEntity<String> chatbot(@RequestParam(required = false) String userCode, @RequestBody Map<String, Object> payload) {
         try {
             List recentMessages = (List) payload.get("RecentMessages");
             String mode = (String) payload.get("mode");
-            String url = "https://fastapi.otoo.kr/chatbot";
+            String url = FASTAPI_URL + "/chatbot";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -46,22 +54,23 @@ public class ChatbotController {
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(fullRequest, headers);
 
-            RestTemplate restTemplate = new RestTemplate();
+            RestTemplate restTemplate = createRestTemplate();
 
+            log.info("Sending request to FastAPI: URL={}, Payload={}", url, fullRequest);
             ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
             log.info("FastAPI 응답 성공: {}", response.getStatusCode());
             return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
         } catch (HttpClientErrorException e) {
-            log.error("클라이언트 오류: {}", e.getMessage());
+            log.error("클라이언트 오류: {}, Response Body: {}", e.getMessage(), e.getResponseBodyAsString());
             return new ResponseEntity<>(e.getResponseBodyAsString(), e.getStatusCode());
         } catch (HttpServerErrorException e) {
-            log.error("서버 오류: {}", e.getMessage());
+            log.error("서버 오류: {}, Response Body: {}", e.getMessage(), e.getResponseBodyAsString());
             return new ResponseEntity<>("FastAPI 서버에서 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ResourceAccessException e) {
-            log.error("리소스 접근 오류: {}", e.getMessage());
+            log.error("리소스 접근 오류: {}, Root Cause: {}", e.getMessage(), e.getRootCause());
             return new ResponseEntity<>("FastAPI 서버에 연결할 수 없습니다.", HttpStatus.SERVICE_UNAVAILABLE);
         } catch (Exception e) {
-            log.error("예상치 못한 오류: {}", e.getMessage());
+            log.error("예상치 못한 오류: {}", e.getMessage(), e);
             return new ResponseEntity<>("서버 내부 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -80,8 +89,9 @@ public class ChatbotController {
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestMap, headers);
 
-            RestTemplate restTemplate = new RestTemplate();
+            RestTemplate restTemplate = createRestTemplate();
 
+            log.info("Sending request to FastAPI: URL={}, Payload={}", url, requestMap);
             ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
             log.info("FastAPI 응답 성공: {}", response.getStatusCode());
 
@@ -101,16 +111,16 @@ public class ChatbotController {
 
             return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
         } catch (HttpClientErrorException e) {
-            log.error("클라이언트 오류: {}", e.getMessage());
+            log.error("클라이언트 오류: {}, Response Body: {}", e.getMessage(), e.getResponseBodyAsString());
             return new ResponseEntity<>(e.getResponseBodyAsString(), e.getStatusCode());
         } catch (HttpServerErrorException e) {
-            log.error("서버 오류: {}", e.getMessage());
+            log.error("서버 오류: {}, Response Body: {}", e.getMessage(), e.getResponseBodyAsString());
             return new ResponseEntity<>("FastAPI 서버에서 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (ResourceAccessException e) {
-            log.error("리소스 접근 오류: {}", e.getMessage());
+            log.error("리소스 접근 오류: {}, Root Cause: {}", e.getMessage(), e.getRootCause());
             return new ResponseEntity<>("FastAPI 서버에 연결할 수 없습니다.", HttpStatus.SERVICE_UNAVAILABLE);
         } catch (Exception e) {
-            log.error("예상치 못한 오류: {}", e.getMessage());
+            log.error("예상치 못한 오류: {}", e.getMessage(), e);
             return new ResponseEntity<>("서버 내부 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

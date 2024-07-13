@@ -40,6 +40,8 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'javax.mail:javax.mail-api:1.6.2' // 현재 버전 확인 후 업데이트 가능
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+
     //json
     implementation 'org.json:json:20230227'
     //구글
