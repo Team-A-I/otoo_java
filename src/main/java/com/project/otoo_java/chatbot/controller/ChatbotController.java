@@ -31,7 +31,7 @@ public class ChatbotController {
         try {
             List recentMessages = (List) payload.get("RecentMessages");
             String mode = (String) payload.get("mode");
-            String url = FASTAPI_URL + "/chatbot";
+            String url = "https://fastapi.otoo.kr//chatbot";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -71,7 +71,7 @@ public class ChatbotController {
         try {
             List messages = (List) payload.get("messages");
             String usersCode = (String) payload.get("usersCode");
-            String url = FASTAPI_URL + "/emotionReport";
+            String url = "https://fastapi.otoo.kr//chatbot";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
