@@ -16,6 +16,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,13 @@ public class AnalyzeController {
         this.analyzeService = analyzeService;
     }
 
+    private RestTemplate createRestTemplate() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(5000); // 연결 타임아웃 5초
+        factory.setReadTimeout(5000); // 읽기 타임아웃 5초
+        return new RestTemplate(factory);
+    }
+
     @PostMapping("/conflict/analysis")
     public ResponseEntity<String> analyzeConflict(@RequestBody Map<String, Object> jsonContent) {
         return sendPostRequestToFastAPI(jsonContent, "conflict");
@@ -52,7 +60,7 @@ public class AnalyzeController {
     }
 
     private ResponseEntity<String> sendPostRequestToFastAPI(Map<String, Object> jsonContent, String type) {
-        RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = createRestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
