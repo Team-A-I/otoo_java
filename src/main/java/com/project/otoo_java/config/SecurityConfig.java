@@ -77,7 +77,7 @@ public class SecurityConfig {
         corsConfiguration.setAllowedOriginPatterns(Arrays.asList("*"));
         corsConfiguration.addAllowedOrigin(REST_URL);
         corsConfiguration.addAllowedOrigin(REACT_URL);
-        corsConfiguration.addAllowedOrigin(FASTAPI_URL + "");
+        corsConfiguration.addAllowedOrigin(FASTAPI_URL);
         corsConfiguration.addAllowedOriginPattern("*");
         corsConfiguration.setAllowedMethods(Arrays.asList("POST", "GET", "DELETE", "PUT", "PATCH"));
         corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
