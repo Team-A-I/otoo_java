@@ -100,7 +100,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS) /* session을 사용하지 않음 */
                 );
 
-
+//
         http
                 .csrf(csrf -> csrf.disable())
 
