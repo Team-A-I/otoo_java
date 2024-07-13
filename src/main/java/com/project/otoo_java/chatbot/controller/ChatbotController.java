@@ -23,7 +23,7 @@ import java.util.Map;
 public class ChatbotController {
 
     private final ChatbotService chatbotService;
-    @Value("{FASTAPI_URL}")
+    @Value("${FASTAPI_URL}")
     private String FASTAPI_URL;
 
     @PostMapping("/chatbot")

@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig {
 
-    @Value("{REACT_URL}")
+    @Value("${REACT_URL}")
     private String REACT_URL;
 
     @Bean
