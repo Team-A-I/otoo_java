@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.otoo_java.analyze.dto.AnalyzeDto;
 import com.project.otoo_java.analyze.service.AnalyzeService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -27,7 +28,8 @@ public class AnalyzeController {
 
     private final AnalyzeService analyzeService;
 
-    private static final String FASTAPI_URL = "http://localhost:8001/analyze";
+    @Value("{fastapi.url}")
+    private String FASTAPI_URL;
     private static final Logger logger = LoggerFactory.getLogger(AnalyzeController.class);
 
     public AnalyzeController(AnalyzeService analyzeService) { // 생성자 추가
@@ -54,6 +56,7 @@ public class AnalyzeController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        // JSON 요청 본문에 type을 추가
         jsonContent.put("type", type);
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(jsonContent, headers);
@@ -68,7 +71,7 @@ public class AnalyzeController {
             }
 
             ResponseEntity<String> response = restTemplate.exchange(
-                    FASTAPI_URL,
+                    FASTAPI_URL + "/analyze",
                     HttpMethod.POST,
                     request,
                     String.class

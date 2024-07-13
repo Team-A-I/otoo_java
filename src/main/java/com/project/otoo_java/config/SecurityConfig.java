@@ -3,6 +3,7 @@ package com.project.otoo_java.config;
 import com.project.otoo_java.jwt.JwtAuthFilter;
 import com.project.otoo_java.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -31,6 +32,12 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final RedisTemplate<String, Object> redisTemplate;
     private final HttpRequestHandlerAdapter httpRequestHandlerAdapter;
+    @Value("{fastapi.url}")
+    private String FASTAPI_URL;
+    @Value("{react.url}")
+    private String REACT_URL;
+    @Value("{rest.url}")
+    private String REST_URL;
 
     private static final String[] PERMIT_URL_ARRAY = {
             /* swagger v3 */
@@ -68,9 +75,9 @@ public class SecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         corsConfiguration.setAllowedOriginPatterns(Arrays.asList("*"));
-        corsConfiguration.addAllowedOrigin("http://localhost:8080");
-        corsConfiguration.addAllowedOrigin("http://localhost:3000");
-        corsConfiguration.addAllowedOrigin("http://localhost:8001");
+        corsConfiguration.addAllowedOrigin(REST_URL);
+        corsConfiguration.addAllowedOrigin(REACT_URL);
+        corsConfiguration.addAllowedOrigin(FASTAPI_URL + "");
         corsConfiguration.addAllowedOriginPattern("*");
         corsConfiguration.setAllowedMethods(Arrays.asList("POST", "GET", "DELETE", "PUT", "PATCH"));
         corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
@@ -99,7 +106,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests((auth) -> auth
                         //react 구성 요소
-                        .requestMatchers("/assets/**", "/js/**", "/fonts/**", "/favicon.ico", "/loader.css", "/ooto_react/**").permitAll()
+                        .requestMatchers("/assets/**", "/js/**", "/fonts/**", "/favicon.ico", "/ooto_react/**", "/team-a-i.github.io/**").permitAll()
                         //swagger
                         .requestMatchers(PERMIT_URL_ARRAY).permitAll()
                         //LoginPermit

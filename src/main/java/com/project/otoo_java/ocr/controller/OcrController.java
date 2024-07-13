@@ -22,7 +22,7 @@ import java.util.Map;
 @RequestMapping("/api")
 public class OcrController {
 
-    private static final String FASTAPI_URL = "http://localhost:8001/ocr";
+    private static final String FASTAPI_URL = FASTAPI_URL + "/ocr";
     private static final Logger logger = LoggerFactory.getLogger(OcrController.class);
 
     @PostMapping("/conflict/ocr")

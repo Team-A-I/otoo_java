@@ -36,7 +36,7 @@ public class JwtUtil {
     public static String BEARER_PREFIX = "Bearer ";
 
 
-    @Value("${jwt.secretKey}")
+    @Value("${JWT_SECRET_KEY}")
     private String secretKey;
 
     private Key key;
@@ -52,6 +52,8 @@ public class JwtUtil {
         String bearerToken = type.equals("Access") ? request.getHeader(ACCESS_TOKEN) : request.getHeader(REFRESH_TOKEN);
 
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+
+            log.info(bearerToken);
 
             return bearerToken.substring(7);
         }
@@ -81,6 +83,9 @@ public class JwtUtil {
         String token = Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setClaims(claims)
+//                .setSubject(email)
+//                .setExpiration(new Date(date.getTime() + time))
+//                .setIssuedAt(date)
                 .signWith(key, signatureAlgorithm)
                 .compact();
 
