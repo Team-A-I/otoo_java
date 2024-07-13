@@ -106,7 +106,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests((auth) -> auth
                         //react 구성 요소
-                        .requestMatchers("/assets/**", "/js/**", "/fonts/**", "/favicon.ico", "/loader.css", "/ooto_react/**").permitAll()
+                        .requestMatchers("/assets/**", "/js/**", "/fonts/**", "/favicon.ico", "/ooto_react/**", "/team-a-i.github.io/**").permitAll()
                         //swagger
                         .requestMatchers(PERMIT_URL_ARRAY).permitAll()
                         //LoginPermit

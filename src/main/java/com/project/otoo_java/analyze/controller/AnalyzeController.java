@@ -56,6 +56,7 @@ public class AnalyzeController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        // JSON 요청 본문에 type을 추가
         jsonContent.put("type", type);
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(jsonContent, headers);
