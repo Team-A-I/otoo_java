@@ -75,8 +75,8 @@ public class SecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         corsConfiguration.setAllowedOriginPatterns(Arrays.asList("*"));
-        corsConfiguration.addAllowedOrigin("https://restapi.otoo.kr");
-        corsConfiguration.addAllowedOrigin("https://fastapi.otoo.kr");
+        corsConfiguration.addAllowedOrigin("https://ra.otoo.kr");
+        corsConfiguration.addAllowedOrigin("https://fa.otoo.kr");
         corsConfiguration.addAllowedOrigin("https://team-a-i.github.io");
         corsConfiguration.addAllowedOrigin(REST_URL);
         corsConfiguration.addAllowedOrigin(REACT_URL);
