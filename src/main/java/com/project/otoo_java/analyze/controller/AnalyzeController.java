@@ -66,9 +66,6 @@ public class AnalyzeController {
             String usersCode = (String) jsonContent.get("usercode");
             String talksType = (String) jsonContent.get("type");
 
-            if (usersCode == null) {
-                usersCode = "Non-members";
-            }
 
             ResponseEntity<String> response = restTemplate.exchange(
                     FASTAPI_URL + "/analyze",
@@ -77,7 +74,6 @@ public class AnalyzeController {
                     String.class
             );
             logger.info("FastAPI 응답 성공: {}", response.getStatusCode());
-            if (usersCode != null) {
                 AnalyzeDto analyzeDto = new AnalyzeDto();
                 analyzeDto.setUsersCode(usersCode);
                 analyzeDto.setTalksMessage(talksMessage);
@@ -98,7 +94,6 @@ public class AnalyzeController {
                 analyzeDto.setTalksPlayer(player1 + ", " + player2);
                 analyzeDto.setTalksResult(parsedResponse.toString());
                 analyzeService.insertAnalyze(analyzeDto);
-            }
             return response;
 
         } catch (HttpClientErrorException e) {
