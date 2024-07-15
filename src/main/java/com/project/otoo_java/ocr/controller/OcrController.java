@@ -3,6 +3,7 @@ package com.project.otoo_java.ocr.controller;
 import com.project.otoo_java.analyze.service.AnalyzeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
@@ -21,8 +22,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 public class OcrController {
-
-    private static final String FASTAPI_URL = FASTAPI_URL + "/ocr";
+    @Value("${FASTAPI_URL}")
+    private String FASTAPI_URL;
     private static final Logger logger = LoggerFactory.getLogger(OcrController.class);
 
     @PostMapping("/conflict/ocr")
@@ -64,7 +65,7 @@ public class OcrController {
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(
-                    FASTAPI_URL,
+                    FASTAPI_URL + "/ocr",
                     HttpMethod.POST,
                     request,
                     String.class

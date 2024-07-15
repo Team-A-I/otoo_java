@@ -32,11 +32,11 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final RedisTemplate<String, Object> redisTemplate;
     private final HttpRequestHandlerAdapter httpRequestHandlerAdapter;
-    @Value("{fastapi.url}")
+    @Value("${FASTAPI_URL}")
     private String FASTAPI_URL;
-    @Value("{react.url}")
+    @Value("${REACT_URL}")
     private String REACT_URL;
-    @Value("{rest.url}")
+    @Value("${REST_URL}")
     private String REST_URL;
 
     private static final String[] PERMIT_URL_ARRAY = {
@@ -75,9 +75,12 @@ public class SecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         corsConfiguration.setAllowedOriginPatterns(Arrays.asList("*"));
+        corsConfiguration.addAllowedOrigin("https://ra.otoo.kr");
+        corsConfiguration.addAllowedOrigin("https://fa.otoo.kr");
+        corsConfiguration.addAllowedOrigin("https://team-a-i.github.io");
         corsConfiguration.addAllowedOrigin(REST_URL);
         corsConfiguration.addAllowedOrigin(REACT_URL);
-        corsConfiguration.addAllowedOrigin(FASTAPI_URL + "");
+        corsConfiguration.addAllowedOrigin(FASTAPI_URL);
         corsConfiguration.addAllowedOriginPattern("*");
         corsConfiguration.setAllowedMethods(Arrays.asList("POST", "GET", "DELETE", "PUT", "PATCH"));
         corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
@@ -100,7 +103,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS) /* session을 사용하지 않음 */
                 );
 
-
+//
         http
                 .csrf(csrf -> csrf.disable())
 

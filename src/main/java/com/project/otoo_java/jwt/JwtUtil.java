@@ -34,7 +34,7 @@ public class JwtUtil {
     public static final String ACCESS_TOKEN = "Access";
     public static final String REFRESH_TOKEN = "Refresh";
     public static String BEARER_PREFIX = "Bearer ";
-
+//
 
     @Value("${JWT_SECRET_KEY}")
     private String secretKey;

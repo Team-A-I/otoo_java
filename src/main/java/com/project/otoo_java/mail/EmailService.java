@@ -27,7 +27,7 @@ public class EmailService {
 
     private final UsersRepository usersRepository;
 
-    @Value("${spring.mail.username}")
+    @Value("${SPRING_MAIL_USERNAME}")
     private String fromEmail;
 
     public String sendEmail(String sendEmail) {
