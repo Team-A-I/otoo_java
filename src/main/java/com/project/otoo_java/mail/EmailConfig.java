@@ -1,5 +1,6 @@
 package com.project.otoo_java.mail;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -9,15 +10,26 @@ import java.util.Properties;
 
 @Configuration
 public class EmailConfig {
+    @Value("${SPRING_MAIL_HOST}")
+    String host;
+
+    @Value("${SPRING_MAIL_PORT}")
+    int port;
+
+    @Value("${SPRING_MAIL_USERNAME}")
+    String username;
+
+    @Value("${SPRING_MAIL_PASSWORD}")
+    String password;
 
     @Bean
     public JavaMailSender getJavaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.naver.com");
-        mailSender.setPort(587);
+        mailSender.setHost(host);
+        mailSender.setPort(port);
 
-        mailSender.setUsername("your-email@naver.com");
-        mailSender.setPassword("your-email-password");
+        mailSender.setUsername(username + "@naver.com");
+        mailSender.setPassword(password);
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
