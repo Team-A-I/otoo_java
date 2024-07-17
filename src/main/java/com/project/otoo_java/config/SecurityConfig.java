@@ -57,6 +57,7 @@ public class SecurityConfig {
             "/forgotpassword/**",
             "/changePwd",
             "/naverLogin/**",
+            "/googleLogin/**",
 
 
 
