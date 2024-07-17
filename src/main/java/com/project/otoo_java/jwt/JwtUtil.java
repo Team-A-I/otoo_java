@@ -83,9 +83,6 @@ public class JwtUtil {
         String token = Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setClaims(claims)
-//                .setSubject(email)
-//                .setExpiration(new Date(date.getTime() + time))
-//                .setIssuedAt(date)
                 .signWith(key, signatureAlgorithm)
                 .compact();
 
