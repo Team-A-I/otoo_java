@@ -72,7 +72,7 @@ public class LoginController {
     @Operation(summary = "구글 로그인 콜백", description = "구글 로그인 콜백 API")
     @GetMapping("/googleLogin/callbacks")
     public ResponseEntity<?> googleLogin(@RequestParam("code") String code, HttpServletResponse res) throws Exception {
-
+        log.info(code);
         try {
             UserResponseDto userResponseDto = accountService.googleLogin(code, res);
             return ResponseEntity.ok(userResponseDto);
