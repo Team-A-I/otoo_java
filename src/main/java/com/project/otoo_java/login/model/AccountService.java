@@ -326,7 +326,7 @@ public class AccountService {
 
 
     public UserResponseDto googleLogin(String code, HttpServletResponse res) throws JsonProcessingException {
-        log.info(usersDto.toString());
+        
         UsersDto usersDto = getGoogleUserInfo(code);
         
         Users users = insertSocialMember(usersDto);
