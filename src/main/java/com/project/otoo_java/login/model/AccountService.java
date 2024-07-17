@@ -347,7 +347,7 @@ public class AccountService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
+        log.info(googleRedirectUri);
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("client_id", googleClientId);
         map.add("client_secret", googleClientSecret);
