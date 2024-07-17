@@ -57,6 +57,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     // 레디스
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    //stt
+    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
 }
 
 tasks.named('test') {
