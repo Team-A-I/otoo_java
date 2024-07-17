@@ -351,7 +351,7 @@ public class AccountService {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("client_id", googleClientId);
         map.add("client_secret", googleClientSecret);
-        map.add("redirect_uri", googleRedirectUri);
+        map.add("redirect_uri", "https://ai.otoo.kr/googlelogin");
         map.add("grant_type", "authorization_code");
         map.add("code", code);
 
