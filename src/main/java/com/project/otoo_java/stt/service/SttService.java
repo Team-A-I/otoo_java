@@ -11,12 +11,15 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -47,16 +50,17 @@ public class SttService {
     @Value("${vito.client_secret}")
     String client_secret;
 
-    public String getAccessToken(){
+    @Value("${FASTAPI_URL}")
+    String fastApiUrl;
+
+    public String getAccessToken() {
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://openapi.vito.ai")
                 .build();
 
-
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("client_id", client_id);
         formData.add("client_secret", client_secret);
-
 
         String response = webClient
                 .post()
@@ -68,13 +72,11 @@ public class SttService {
                 .block();
 
         log.info(response);
-        JSONObject jsonObject = new JSONObject(response.toString());
+        JSONObject jsonObject = new JSONObject(response);
         return jsonObject.getString("access_token");
     }
 
-
     public void transcribeFile(MultipartFile multipartFile) throws IOException, InterruptedException {
-
         accessToken = getAccessToken();
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://openapi.vito.ai/v1")
@@ -83,17 +85,16 @@ public class SttService {
                 .build();
 
         Path currentPath = Paths.get("");
-        File file = new File(currentPath.toAbsolutePath().toString() + "/"+multipartFile.getOriginalFilename());
+        File file = new File(currentPath.toAbsolutePath().toString() + "/" + multipartFile.getOriginalFilename());
         multipartFile.transferTo(file);
 
         MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
         multipartBodyBuilder.part("file", new FileSystemResource(file));
-        multipartBodyBuilder.part("config", "{\"use_diarization\": true, \"diarization\": {\"spk_count\": 2}}", MediaType.APPLICATION_JSON);
-
+        multipartBodyBuilder.part("config", "{\"use_diarization\": true, \"diarization\": {\"spk_count\": 2}, \"domain\": \"CALL\"}", MediaType.APPLICATION_JSON);
 
         // POST 요청 보내기
         String response = null;
-        try{
+        try {
             response = webClient.post()
                     .uri("/transcribe")
                     .body(BodyInserters.fromMultipartData(multipartBodyBuilder.build()))
@@ -101,14 +102,14 @@ public class SttService {
                     .bodyToMono(String.class)
                     .block();
             log.info("post 끝");
-        }catch (WebClientResponseException e){
+        } catch (WebClientResponseException e) {
             log.error(String.valueOf(e));
         }
 
-        JSONObject jsonObject = new JSONObject(response.toString());
+        JSONObject jsonObject = new JSONObject(response);
 
-        try{
-            if(jsonObject.getString("code").equals("H0002")){
+        try {
+            if (jsonObject.getString("code").equals("H0002")) {
                 log.info("accessToken 만료로 재발급 받습니다");
                 accessToken = getAccessToken();
                 response = webClient.post()
@@ -118,7 +119,7 @@ public class SttService {
                         .bodyToMono(String.class)
                         .block();
             }
-        }catch (JSONException e){
+        } catch (JSONException e) {
             log.info("code 확인 불가 오류 catch");
             log.info(e.toString());
         }
@@ -126,13 +127,22 @@ public class SttService {
 
         stopPolling = false;
         transcribeId = jsonObject.getString("id");
-        startPolling();
+        String finalResponse = startPolling();
+
+        // FastAPI로 데이터 전송
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> request = new HttpEntity<>(finalResponse, headers);
+        ResponseEntity<String> fastApiResponse = restTemplate.postForEntity(fastApiUrl + "/stt", request, String.class);
+
+        // FastAPI 응답을 로그로 출력
+        log.info("FastAPI 응답: " + fastApiResponse.getBody());
     }
 
-
-
     // 5초마다 실행 (주기는 필요에 따라 조절)
-    public void startPolling() throws InterruptedException {
+    public String startPolling() throws InterruptedException {
         log.info("Polling 함수 첫 시작");
         String response = null;
         Thread.sleep(5000);
@@ -143,7 +153,6 @@ public class SttService {
                     .defaultHeader(HttpHeaders.AUTHORIZATION, "bearer " + accessToken)
                     .build();
 
-
             String uri = "/transcribe/" + transcribeId;
             response = webClient.get()
                     .uri(uri)
@@ -151,9 +160,7 @@ public class SttService {
                     .bodyToMono(String.class)
                     .block();
 
-
-
-            JSONObject jsonObject = new JSONObject(response.toString());
+            JSONObject jsonObject = new JSONObject(response);
             // status 확인하여 폴링 중단 여부 결정
             if (jsonObject.getString("status").equals("completed")) {
                 stopPolling = true;
@@ -168,7 +175,8 @@ public class SttService {
         }
 
         log.info("폴링함수 끝");
-        log.info(response.toString());
+        log.info(response);
+        return response;
     }
 
 
