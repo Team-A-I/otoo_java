@@ -92,7 +92,7 @@ public class SttService {
 
         MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
         multipartBodyBuilder.part("file", new FileSystemResource(file));
-        multipartBodyBuilder.part("config", "{\"use_diarization\": true, \"diarization\": {\"spk_count\": 2}, \"domain\": \"CALL\"}", MediaType.APPLICATION_JSON);
+        multipartBodyBuilder.part("config", "{\"use_diarization\": true, \"diarization\": {\"spk_count\": 2}, \"domain\": \"GENERAL\"}", MediaType.APPLICATION_JSON);
 
         // POST 요청 보내기
         String response = null;
