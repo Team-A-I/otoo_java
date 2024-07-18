@@ -10,7 +10,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/tutorial")
+@RequestMapping("/api")
 public class SttController {
     private final SttService sttService;
 
@@ -24,7 +24,7 @@ public class SttController {
         return sttService.transcribeFile(file);
     }
 
-    @PostMapping(value = "/transcribe/websocket/file", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/transcribe/websocket", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public void transcribeWebsocketFile(@RequestPart MultipartFile file) throws IOException, UnsupportedAudioFileException, InterruptedException {
         sttService.transcribeWebSocketFile(file);
     }

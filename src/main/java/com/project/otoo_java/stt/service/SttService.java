@@ -212,7 +212,6 @@ public class SttService {
         httpBuilder.addQueryParameter("use_itn", "true");
         httpBuilder.addQueryParameter("use_disfluency_filter", "true");
         httpBuilder.addQueryParameter("use_profanity_filter", "true");
-        httpBuilder.addQueryParameter("domain", "CALL");
 
         String url = httpBuilder.toString().replace("https://", "wss://");
 
