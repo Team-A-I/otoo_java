@@ -77,7 +77,7 @@ public class SecurityConfig {
         corsConfiguration.setAllowedOriginPatterns(Arrays.asList("*"));
         corsConfiguration.addAllowedOrigin("https://ra.otoo.kr");
         corsConfiguration.addAllowedOrigin("https://fa.otoo.kr");
-        corsConfiguration.addAllowedOrigin("https://team-a-i.github.io");
+        corsConfiguration.addAllowedOrigin("http://localhost:3000");
         corsConfiguration.addAllowedOrigin(REST_URL);
         corsConfiguration.addAllowedOrigin(REACT_URL);
         corsConfiguration.addAllowedOrigin(FASTAPI_URL);
@@ -109,7 +109,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests((auth) -> auth
                         //react 구성 요소
-                        .requestMatchers("/assets/**", "/js/**", "/fonts/**", "/favicon.ico", "/ooto_react/**", "/team-a-i.github.io/**").permitAll()
+                        .requestMatchers("/assets/**", "/js/**", "/fonts/**", "/favicon.ico", "/**", "/team-a-i.github.io/**").permitAll()
                         //swagger
                         .requestMatchers(PERMIT_URL_ARRAY).permitAll()
                         //LoginPermit

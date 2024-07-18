@@ -30,6 +30,8 @@ import java.io.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,7 +78,7 @@ public class SttService {
         return jsonObject.getString("access_token");
     }
 
-    public void transcribeFile(MultipartFile multipartFile) throws IOException, InterruptedException {
+    public ResponseEntity<String> transcribeFile(MultipartFile multipartFile) throws IOException, InterruptedException {
         accessToken = getAccessToken();
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://openapi.vito.ai/v1")
@@ -129,16 +131,29 @@ public class SttService {
         transcribeId = jsonObject.getString("id");
         String finalResponse = startPolling();
 
+        // JSON 응답을 파싱하여 'verified' 필드를 리스트로 변경
+        JSONObject responseJson = new JSONObject(finalResponse);
+        JSONObject results = responseJson.getJSONObject("results");
+
+        // 'verified' 필드가 리스트 형식이 아닌 경우 리스트로 변경
+        if (!results.has("verified") || !(results.get("verified") instanceof List)) {
+            List<Boolean> verifiedList = new ArrayList<>();
+            verifiedList.add(results.getBoolean("verified"));
+            results.put("verified", verifiedList);
+        }
+
         // FastAPI로 데이터 전송
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<String> request = new HttpEntity<>(finalResponse, headers);
+        HttpEntity<String> request = new HttpEntity<>(responseJson.toString(), headers);
         ResponseEntity<String> fastApiResponse = restTemplate.postForEntity(fastApiUrl + "/stt", request, String.class);
 
         // FastAPI 응답을 로그로 출력
         log.info("FastAPI 응답: " + fastApiResponse.getBody());
+
+        return fastApiResponse;
     }
 
     // 5초마다 실행 (주기는 필요에 따라 조절)
