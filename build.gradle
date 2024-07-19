@@ -63,7 +63,9 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     //WebSocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.java-websocket:Java-WebSocket:1.5.2'
+    //google stt
+    implementation platform('com.google.cloud:libraries-bom:  26.43.0')
+    implementation 'com.google.cloud:google-cloud-speech'
 }
 
 tasks.named('test') {
