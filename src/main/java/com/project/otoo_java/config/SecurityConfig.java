@@ -75,7 +75,14 @@ public class SecurityConfig {
             "/changePwd",
             "/join",
             "/users",
-            "/changePwd"
+            "/changePwd",
+            //분석
+            "/api/conflict/analysis",
+            "/api/love/analysis",
+            "/api/friendship/analysis",
+            //stt
+            "/api/transcribe/file",
+            "/api/transcribe/websocket"
     };
 
     // BCryptPasswordEncoder 빈 등록
