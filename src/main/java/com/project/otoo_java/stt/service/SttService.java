@@ -1,16 +1,12 @@
 package com.project.otoo_java.stt.service;
 
 import lombok.extern.slf4j.Slf4j;
-
 import okhttp3.*;
-
 import okio.ByteString;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
-
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -26,8 +22,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.io.*;
-
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -35,8 +29,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-
 
 @Service
 @Slf4j
@@ -86,12 +78,16 @@ public class SttService {
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "bearer " + accessToken)
                 .build();
 
-        Path currentPath = Paths.get("");
-        File file = new File(currentPath.toAbsolutePath().toString() + "/" + multipartFile.getOriginalFilename());
-        multipartFile.transferTo(file);
+        byte[] fileBytes = multipartFile.getBytes();
+        ByteArrayResource byteArrayResource = new ByteArrayResource(fileBytes) {
+            @Override
+            public String getFilename() {
+                return multipartFile.getOriginalFilename();
+            }
+        };
 
         MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
-        multipartBodyBuilder.part("file", new FileSystemResource(file));
+        multipartBodyBuilder.part("file", byteArrayResource, MediaType.MULTIPART_FORM_DATA);
         multipartBodyBuilder.part("config", "{\"use_diarization\": true, \"diarization\": {\"spk_count\": 2}, \"domain\": \"GENERAL\"}", MediaType.APPLICATION_JSON);
 
         // POST 요청 보내기
@@ -194,11 +190,6 @@ public class SttService {
         return response;
     }
 
-
-
-
-
-
     public void transcribeWebSocketFile(MultipartFile multipartFile) throws IOException, InterruptedException {
         Logger logger = Logger.getLogger(SttService.class.getName());
         OkHttpClient client = new OkHttpClient();
@@ -223,20 +214,10 @@ public class SttService {
         VitoWebSocketListener webSocketListener = new VitoWebSocketListener();
         WebSocket vitoWebSocket = client.newWebSocket(request, webSocketListener);
 
-        FileInputStream fis = null;
-        Path currentPath = Paths.get("");
-        File file = new File(currentPath.toAbsolutePath().toString() + "/"+multipartFile.getOriginalFilename());
-        multipartFile.transferTo(file);
-        try {
-            fis = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-
+        InputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes());
         byte[] buffer = new byte[1024];
         int readBytes;
-        while ((readBytes = fis.read(buffer)) != -1) {
+        while ((readBytes = inputStream.read(buffer)) != -1) {
             boolean sent = vitoWebSocket.send(ByteString.of(buffer, 0, readBytes));
             if (!sent) {
                 logger.log(Level.WARNING, "Send buffer is full. Cannot complete request. Increase sleep interval.");
@@ -244,19 +225,13 @@ public class SttService {
             }
             Thread.sleep(0, 100);
         }
-        fis.close();
+        inputStream.close();
         vitoWebSocket.send("EOS");
 
         webSocketListener.waitClose();
         client.dispatcher().executorService().shutdown();
-
     }
-
 }
-
-
-
-
 
 @Slf4j
 class VitoWebSocketListener extends WebSocketListener {
