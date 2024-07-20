@@ -29,97 +29,109 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtUtil jwtUtil;
-    private final RedisTemplate<String, Object> redisTemplate;
-    private final HttpRequestHandlerAdapter httpRequestHandlerAdapter;
-    @Value("${FASTAPI_URL}")
+    private final JwtUtil jwtUtil; // JWT 관련 유틸리티 클래스 주입
+    private final RedisTemplate<String, Object> redisTemplate; // Redis 템플릿 주입
+    private final HttpRequestHandlerAdapter httpRequestHandlerAdapter; // HTTP 요청 핸들러 어댑터 주입
+
+    @Value("${FASTAPI_URL}") // FASTAPI 서버 URL
     private String FASTAPI_URL;
-    @Value("${REACT_URL}")
+
+    @Value("${REACT_URL}") // REACT 앱 URL
     private String REACT_URL;
-    @Value("${REST_URL}")
+
+    @Value("${REST_URL}") // REST API 서버 URL
     private String REST_URL;
 
+    // 허용할 URL 패턴 배열
     private static final String[] PERMIT_URL_ARRAY = {
             /* swagger v3 */
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-resources/**",
 
-            "/set/",
-
-            "/member/**",
-            "/email/**",
-            "/login/**",
-            "/loginForm/**",
-            "/join",
+            // 인증 없이 접근 가능한 URL들
+            //챗봇
+            "/chatbot",
+            "/emotionReport",
+            //피드백
+            "/feedback",
+            //로그인
+            "/login",
             "/kakaoLogin/**",
-            "/admin/**",
+            "/naverLogin",
+            "/naverLogin/callbacks",
+            "/googleLogin/callbacks",
+            "/newtoken/**",
+            "/logoutUser",
+            //이메일인증
+            "/email/**",
             "/forgotpassword/**",
+            //ocr
+            "/conflict/ocr",
+            "/love/ocr",
+            "/friendship/ocr",
+            //회원가입
+            "/users",
             "/changePwd",
-            "/naverLogin/**",
-
-
-
-
+            "/join",
+            "/users",
+            "/changePwd"
     };
 
-
+    // BCryptPasswordEncoder 빈 등록
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
-
         return new BCryptPasswordEncoder();
     }
 
+    // CORS 설정 빈 등록
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
+        // 허용할 오리진 패턴 설정
         corsConfiguration.setAllowedOriginPatterns(Arrays.asList("*"));
-        corsConfiguration.addAllowedOrigin("https://ra.otoo.kr");
-        corsConfiguration.addAllowedOrigin("https://fa.otoo.kr");
-        corsConfiguration.addAllowedOrigin("http://localhost:3000");
-        corsConfiguration.addAllowedOrigin(REST_URL);
         corsConfiguration.addAllowedOrigin(REACT_URL);
-        corsConfiguration.addAllowedOrigin(FASTAPI_URL);
-        corsConfiguration.addAllowedOriginPattern("*");
-        corsConfiguration.setAllowedMethods(Arrays.asList("POST", "GET", "DELETE", "PUT", "PATCH"));
-        corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
-        corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.addExposedHeader("*");
+        corsConfiguration.addAllowedOriginPattern("*"); // 모든 오리진 패턴 허용
+        corsConfiguration.setAllowedMethods(Arrays.asList("POST", "GET", "DELETE", "PUT", "PATCH")); // 허용할 HTTP 메서드 설정
+        corsConfiguration.setAllowedHeaders(Arrays.asList("*")); // 모든 헤더 허용
+        corsConfiguration.setAllowCredentials(true); // 인증 정보를 서버에 전달할 수 있도록 설정
+        corsConfiguration.addExposedHeader("*"); // 모든 헤더 노출
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
+        source.registerCorsConfiguration("/**", corsConfiguration); // 모든 경로에 대해 CORS 설정 적용
         return source;
     }
 
+    // SecurityFilterChain 설정 빈 등록
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        JwtAuthFilter jwtAuthFilter = new JwtAuthFilter(jwtUtil, redisTemplate,httpRequestHandlerAdapter);
+        JwtAuthFilter jwtAuthFilter = new JwtAuthFilter(jwtUtil, redisTemplate, httpRequestHandlerAdapter);
 
+        // CSRF 보안 설정 비활성화
         http.csrf(AbstractHttpConfigurer::disable);
-        http.cors(Customizer.withDefaults());
+        http.cors(Customizer.withDefaults()); // CORS 설정 적용
+
         http
-                .sessionManagement((sessionManagement) -> sessionManagement
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) /* session을 사용하지 않음 */
+                .sessionManagement((sessionManagement) ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션을 사용하지 않음
                 );
 
-//
         http
-                .csrf(csrf -> csrf.disable())
-
-                .authorizeHttpRequests((auth) -> auth
-                        //react 구성 요소
-                        .requestMatchers("/assets/**", "/js/**", "/fonts/**", "/favicon.ico", "/**", "/team-a-i.github.io/**").permitAll()
-                        //swagger
-                        .requestMatchers(PERMIT_URL_ARRAY).permitAll()
-                        //LoginPermit
-                        .requestMatchers("/**", "/index.html").permitAll()
-                        //.requestMatchers("/admin").hasRole("ROLE_ADMIN")
-                        .anyRequest().authenticated()
+                //.csrf(csrf -> csrf.disable()) // CSRF 보안 설정 다시 비활성화
+                .authorizeHttpRequests((auth) ->
+                        auth
+                                // 인증없이 허용 URL
+                                .requestMatchers(PERMIT_URL_ARRAY).permitAll()
+                                // 특정 URL 허용
+                                .requestMatchers("/users/**").hasRole("USER")
+                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                .anyRequest().authenticated() // 나머지 요청에 대해 인증 필요
                 );
 
-        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // JWT 필터를 UsernamePasswordAuthenticationFilter 앞에 추가
 
-        return http.build();
+        return http.build(); // SecurityFilterChain 반환
     }
+
 }

@@ -27,21 +27,21 @@ public class OcrController {
     private static final Logger logger = LoggerFactory.getLogger(OcrController.class);
 
     @PostMapping("/conflict/ocr")
-    public ResponseEntity<String> ocrConflict(@RequestParam("file") MultipartFile file) {
-        return sendPostRequestToFastAPI(file, "conflict");
+    public ResponseEntity<String> ocrConflict(@RequestParam("file") MultipartFile[] files) {
+        return sendPostRequestToFastAPI(files, "conflict");
     }
 
     @PostMapping("/love/ocr")
-    public ResponseEntity<String> ocrLove(@RequestParam("file") MultipartFile file) {
-        return sendPostRequestToFastAPI(file, "love");
+    public ResponseEntity<String> ocrLove(@RequestParam("file") MultipartFile[] files) {
+        return sendPostRequestToFastAPI(files, "love");
     }
 
     @PostMapping("/friendship/ocr")
-    public ResponseEntity<String> ocrFriendship(@RequestParam("file") MultipartFile file) {
-        return sendPostRequestToFastAPI(file, "friendship");
+    public ResponseEntity<String> ocrFriendship(@RequestParam("file") MultipartFile[] files) {
+        return sendPostRequestToFastAPI(files, "friendship");
     }
 
-    private ResponseEntity<String> sendPostRequestToFastAPI(MultipartFile file, String type) {
+    private ResponseEntity<String> sendPostRequestToFastAPI(MultipartFile[] files, String type) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -49,13 +49,15 @@ public class OcrController {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("type", type);
         try {
-            ByteArrayResource fileResource = new ByteArrayResource(file.getBytes()) {
-                @Override
-                public String getFilename() {
-                    return file.getOriginalFilename();
-                }
-            };
-            body.add("file", fileResource);
+            for (MultipartFile file : files) {
+                ByteArrayResource fileResource = new ByteArrayResource(file.getBytes()) {
+                    @Override
+                    public String getFilename() {
+                        return file.getOriginalFilename();
+                    }
+                };
+                body.add("files", fileResource);  // 여기서 "file" 대신 "files"로 변경
+            }
         } catch (IOException e) {
             logger.error("파일 변환 오류: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 처리 중 오류가 발생했습니다.");
