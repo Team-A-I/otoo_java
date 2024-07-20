@@ -15,10 +15,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter;
+
 
 import java.util.Arrays;
 
@@ -73,7 +75,14 @@ public class SecurityConfig {
             "/changePwd",
             "/join",
             "/users",
-            "/changePwd"
+            "/changePwd",
+            //분석
+            "/api/conflict/analysis",
+            "/api/love/analysis",
+            "/api/friendship/analysis",
+            //stt
+            "/api/transcribe/file",
+            "/api/transcribe/websocket"
     };
 
     // BCryptPasswordEncoder 빈 등록

@@ -57,6 +57,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     // 레디스
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    //stt
+    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    //WebSocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 }
 
 tasks.named('test') {

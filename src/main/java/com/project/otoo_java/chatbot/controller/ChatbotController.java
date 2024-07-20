@@ -3,6 +3,7 @@ import com.project.otoo_java.chatbot.model.dto.EmotionReportsDto;
 import com.project.otoo_java.chatbot.model.service.ChatbotService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
@@ -18,12 +19,17 @@ import java.util.Map;
 @RestController
 public class ChatbotController {
     private final ChatbotService chatbotService;
+
+    @Value("${FASTAPI_URL}")
+    private String FASTAPI_URL;
+
+
     @PostMapping("/chatbot")
     public ResponseEntity<String> chatbot(@RequestParam(required = false) String userCode, @RequestBody Map<String, Object> payload) {
         try {
             List recentMessages = (List) payload.get("RecentMessages");
             String mode = (String) payload.get("mode");
-            String url = "http://localhost:8001/chatbot";
+            String url = FASTAPI_URL + "/chatbot";;
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             Map<String, Object> recentMessagesRequest = new HashMap<>();
@@ -57,7 +63,7 @@ public class ChatbotController {
         try {
             List messages = (List) payload.get("messages");
             String usersCode = (String) payload.get("usersCode");
-            String url = "http://localhost:8001/emotionReport";
+            String url = FASTAPI_URL + "/emotionReport";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             Map<String, Object> requestMap = new HashMap<>();
