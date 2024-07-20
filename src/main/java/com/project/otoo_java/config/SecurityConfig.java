@@ -82,7 +82,9 @@ public class SecurityConfig {
             "/api/friendship/analysis",
             //stt
             "/api/transcribe/file",
-            "/api/transcribe/websocket"
+            "/api/transcribe/websocket",
+            "/transcribe",
+            "/audio-stream"
     };
 
     // BCryptPasswordEncoder 빈 등록
