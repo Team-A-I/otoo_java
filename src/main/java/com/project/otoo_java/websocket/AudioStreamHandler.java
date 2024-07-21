@@ -55,9 +55,8 @@ public class AudioStreamHandler extends BinaryWebSocketHandler {
     }
 
     private void startFfmpegProcess() throws IOException {
-        // ffmpeg 실행 파일의 절대 경로를 지정합니다.
-        String ffmpegPath = "C:\\Users\\bjh73\\Downloads\\ffmpeg-master-latest-win64-gpl\\ffmpeg-master-latest-win64-gpl\\bin\\ffmpeg.exe"; // Windows의 경우
-        // String ffmpegPath = "/usr/local/bin/ffmpeg"; // macOS 또는 Linux의 경우
+        // ffmpeg 실행 파일의 절대 경로를 지정
+        String ffmpegPath = "C:\\Users\\bjh73\\Downloads\\ffmpeg-master-latest-win64-gpl\\ffmpeg-master-latest-win64-gpl\\bin\\ffmpeg.exe";
 
         ProcessBuilder processBuilder = new ProcessBuilder(
                 ffmpegPath, "-i", "pipe:0", "-f", "wav", "-ac", "1", "-ar", "16000", "pipe:1");
