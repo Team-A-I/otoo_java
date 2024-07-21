@@ -107,7 +107,7 @@ public class AccountService {
 
             TokenDto tokenDto = jwtUtil.createAllToken(usersEntity.getUsersEmail());
             setHeader(res, tokenDto);
-            redisTemplate.opsForValue().set("JWT_TOKEN:" + usersEntity.getUsersEmail(), tokenDto.getRefreshToken());
+            redisTemplate.opsForValue().set("JWT_TOKEN:" + usersEntity.getUsersEmail(), tokenDto.getRefreshToken(),7 * 24 * 60 * 60 * 1000L, java.util.concurrent.TimeUnit.MINUTES);
             return new UserResponseDto(usersEntity);
 
         } catch (NotFoundException e) {
@@ -129,7 +129,7 @@ public class AccountService {
 
         TokenDto tokenDto = jwtUtil.createAllToken(users.getUsersEmail());
         setHeader(res, tokenDto);
-        redisTemplate.opsForValue().set("JWT_TOKEN:" + users.getUsersEmail(), tokenDto.getRefreshToken());
+        redisTemplate.opsForValue().set("JWT_TOKEN:" + users.getUsersEmail(), tokenDto.getRefreshToken(),7 * 24 * 60 * 60 * 1000L, java.util.concurrent.TimeUnit.MINUTES);
 
         return new UserResponseDto(users);
     }
@@ -215,7 +215,7 @@ public class AccountService {
 
         TokenDto tokenDto = jwtUtil.createAllToken(users.getUsersEmail());
         setHeader(res, tokenDto);
-        redisTemplate.opsForValue().set("JWT_TOKEN:" + users.getUsersEmail(), tokenDto.getRefreshToken());
+        redisTemplate.opsForValue().set("JWT_TOKEN:" + users.getUsersEmail(), tokenDto.getRefreshToken(),7 * 24 * 60 * 60 * 1000L, java.util.concurrent.TimeUnit.MINUTES);
 
         return new UserResponseDto(users);
     }
@@ -335,7 +335,7 @@ public class AccountService {
 
         TokenDto tokenDto = jwtUtil.createAllToken(users.getUsersEmail());
         setHeader(res, tokenDto);
-        redisTemplate.opsForValue().set("JWT_TOKEN:" + users.getUsersEmail(), tokenDto.getRefreshToken());
+        redisTemplate.opsForValue().set("JWT_TOKEN:" + users.getUsersEmail(), tokenDto.getRefreshToken(),7 * 24 * 60 * 60 * 1000L, java.util.concurrent.TimeUnit.MINUTES);
 
         return new UserResponseDto(users);
     }
