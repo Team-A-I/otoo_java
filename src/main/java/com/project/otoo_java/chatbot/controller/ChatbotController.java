@@ -98,4 +98,33 @@ public class ChatbotController {
             return new ResponseEntity<>("서버 내부 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/qna")
+    public ResponseEntity<String> qna(@RequestBody String chat) {
+        try {
+
+            String url = FASTAPI_URL + "/qna";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            Map<String, Object> requestMap = new HashMap<>();
+            requestMap.put("messages", chat);
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestMap, headers);
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+            log.info("FastAPI 응답 성공: {}", response.getStatusCode());
+            return new ResponseEntity<>(response.getBody(), HttpStatus.OK);
+        } catch (HttpClientErrorException e) {
+            log.error("클라이언트 오류: {}", e.getMessage());
+            return new ResponseEntity<>(e.getResponseBodyAsString(), e.getStatusCode());
+        } catch (HttpServerErrorException e) {
+            log.error("서버 오류: {}", e.getMessage());
+            return new ResponseEntity<>("FastAPI 서버에서 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (ResourceAccessException e) {
+            log.error("리소스 접근 오류: {}", e.getMessage());
+            return new ResponseEntity<>("FastAPI 서버에 연결할 수 없습니다.", HttpStatus.SERVICE_UNAVAILABLE);
+        } catch (Exception e) {
+            log.error("예상치 못한 오류: {}", e.getMessage());
+            return new ResponseEntity<>("서버 내부 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
