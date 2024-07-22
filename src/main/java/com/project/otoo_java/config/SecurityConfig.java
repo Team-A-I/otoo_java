@@ -67,9 +67,9 @@ public class SecurityConfig {
             "/email/**",
             "/forgotpassword/**",
             //ocr
-            "/conflict/ocr",
-            "/love/ocr",
-            "/friendship/ocr",
+            "/api/conflict/ocr",
+            "/api/love/ocr",
+            "/api/friendship/ocr",
             //회원가입
             "/users",
             "/changePwd",
@@ -82,7 +82,9 @@ public class SecurityConfig {
             "/api/friendship/analysis",
             //stt
             "/api/transcribe/file",
-            "/api/transcribe/websocket"
+            "/api/transcribe/websocket",
+            //board
+            "/api/posts"
     };
 
     // BCryptPasswordEncoder 빈 등록
