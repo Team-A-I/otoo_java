@@ -29,7 +29,6 @@ public class OcrController {
 
     @PostMapping("/conflict/ocr")
     public ResponseEntity<String> ocrConflict(@RequestParam("file") MultipartFile[] files) {
-        log.info("도착!!!!!"+files.length);
         return sendPostRequestToFastAPI(files, "conflict");
     }
 
