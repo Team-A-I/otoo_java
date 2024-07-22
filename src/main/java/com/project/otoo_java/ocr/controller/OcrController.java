@@ -1,6 +1,7 @@
 package com.project.otoo_java.ocr.controller;
 
 import com.project.otoo_java.analyze.service.AnalyzeService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
+@Slf4j
 @RestController
 @RequestMapping("/api")
 public class OcrController {
@@ -28,6 +29,7 @@ public class OcrController {
 
     @PostMapping("/conflict/ocr")
     public ResponseEntity<String> ocrConflict(@RequestParam("file") MultipartFile[] files) {
+        log.info("도착!!!!!"+files.length);
         return sendPostRequestToFastAPI(files, "conflict");
     }
 
