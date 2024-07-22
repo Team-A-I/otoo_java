@@ -83,6 +83,9 @@ public class SecurityConfig {
             //stt
             "/api/transcribe/file",
             "/api/transcribe/websocket",
+            "/transcribe",
+            "/audio-stream",
+            "/api/transcribe/websocket",
             //board
             "/api/posts"
     };
