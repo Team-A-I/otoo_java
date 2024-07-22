@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class Auth {
-    public static String CLIENT_ID = "PLDInAkIvxlr129Bxe50";
-    public static String CLIENT_SECRET = "rj3P-Z3XFares0IVM5VKolJxaLlqfcCjCUUCTe3f";
+
+
+    public static String CLIENT_ID = System.getenv("VITO_CLIENT_ID");
+    public static String CLIENT_SECRET = System.getenv("VITO_CLIENT_SECRET");
 
     public static String getAccessToken() throws IOException {
         OkHttpClient client = new OkHttpClient();
