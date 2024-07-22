@@ -2,6 +2,7 @@ package com.project.otoo_java.users.controller;
 
 import com.project.otoo_java.login.model.AccountService;
 import com.project.otoo_java.users.model.dto.UsersDto;
+import com.project.otoo_java.users.model.entity.Users;
 import com.project.otoo_java.users.model.service.UsersService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -52,5 +55,51 @@ public class UsersController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // 유저 밴 상태 변경(밴X -> 밴O)
+    @PostMapping("/admin/changeStatusBan")
+    public ResponseEntity<?> changeStatusBan(@RequestBody UsersDto usersDto) throws Exception {
+        try {
+            usersService.updateStatusBan(usersDto.getUsersCode());
+        }catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // 유저 밴 상태 변경(밴O -> 밴X)
+    @PostMapping("/admin/changeStatusNotBan")
+    public ResponseEntity<?> changeStatusNotBan(@RequestBody UsersDto usersDto) throws Exception {
+        try {
+            usersService.updateStatusNotBan(usersDto.getUsersCode());
+        }catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // 유저 정보 전체 가져오기
+    @GetMapping("/getAllUser")
+    public List<Users> userList(){
+        return usersService.usersList();
+    }
+
+    // check box 따라 선택지 다르게 출력
+
+    // 성별 1개 선택 시 출력
+    @GetMapping("/admin/getGenderOne/{usersGender}")
+    public List<Users> userGenderList(@PathVariable(value="usersGender") String usersGender){
+        log.info("유저 성별 1개 선택 시 조회 메소드 시작");
+        log.info(usersGender);
+        return usersService.usersGenderOneList(usersGender);
+    }
+
+    // 계정 상태 1개 선택 시 출력
+    @GetMapping("/admin/getBanOne/{usersBan}")
+    public List<Users> userBanList(@PathVariable(value="usersBan") String usersBan){
+        log.info("유저 밴 상태 1개 선택 시 조회 메소드 시작");
+        log.info(usersBan);
+        return usersService.usersBanOneList(usersBan);
     }
 }
