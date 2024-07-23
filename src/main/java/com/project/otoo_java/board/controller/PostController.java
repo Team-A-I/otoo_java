@@ -16,8 +16,8 @@ public class PostController {
     private PostService postService;
 
     @GetMapping
-    public List<Post> getAllPosts() {
-        return postService.getAllPostsSortedByDateDesc();
+    public List<Post> getPosts() {
+        return postService.getPosts();
     }
 
     @PostMapping
