@@ -53,6 +53,7 @@ public class SecurityConfig {
             //챗봇
             "/chatbot",
             "/emotionReport",
+            "/qna",
             //피드백
             "/feedback",
             //로그인

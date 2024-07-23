@@ -1,7 +1,6 @@
 package com.project.otoo_java.board.service;
 
 import com.project.otoo_java.board.entity.Post;
-import com.project.otoo_java.board.dto.PostDto;
 import com.project.otoo_java.board.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +8,7 @@ import java.util.List;
 
 @Service
 public class PostService {
+
     @Autowired
     private PostRepository postRepository;
 
@@ -16,7 +16,15 @@ public class PostService {
         return postRepository.findAll();
     }
 
-    public Post savePost(Post post) {
+    public List<Post> getAllPostsSortedByDateDesc() {
+        return postRepository.findAllByOrderByDateDesc();
+    }
+
+    public Post createPost(Post post) {
         return postRepository.save(post);
+    }
+
+    public void deletePost(Long id) {
+        postRepository.deleteById(id);
     }
 }
