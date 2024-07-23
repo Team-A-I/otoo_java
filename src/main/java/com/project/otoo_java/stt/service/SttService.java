@@ -3,14 +3,13 @@ package com.project.otoo_java.stt.service;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import okio.ByteString;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.*;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -20,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -90,7 +90,6 @@ public class SttService {
         multipartBodyBuilder.part("file", byteArrayResource, MediaType.MULTIPART_FORM_DATA);
         multipartBodyBuilder.part("config", "{\"use_diarization\": true, \"diarization\": {\"spk_count\": 2}, \"domain\": \"GENERAL\"}", MediaType.APPLICATION_JSON);
 
-        // POST 요청 보내기
         String response = null;
         try {
             response = webClient.post()
@@ -102,55 +101,83 @@ public class SttService {
             log.info("post 끝");
         } catch (WebClientResponseException e) {
             log.error(String.valueOf(e));
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "STT 요청 실패");
         }
 
-        JSONObject jsonObject = new JSONObject(response);
+        if (response != null) {
+            JSONObject jsonObject = new JSONObject(response);
 
-        try {
-            if (jsonObject.getString("code").equals("H0002")) {
-                log.info("accessToken 만료로 재발급 받습니다");
-                accessToken = getAccessToken();
-                response = webClient.post()
-                        .uri("/transcribe")
-                        .body(BodyInserters.fromMultipartData(multipartBodyBuilder.build()))
-                        .retrieve()
-                        .bodyToMono(String.class)
-                        .block();
+            try {
+                if (jsonObject.getString("code").equals("H0002")) {
+                    log.info("accessToken 만료로 재발급 받습니다");
+                    accessToken = getAccessToken();
+                    response = webClient.post()
+                            .uri("/transcribe")
+                            .body(BodyInserters.fromMultipartData(multipartBodyBuilder.build()))
+                            .retrieve()
+                            .bodyToMono(String.class)
+                            .block();
+                }
+            } catch (JSONException e) {
+                log.info("code 확인 불가 오류 catch");
+                log.info(e.toString());
             }
-        } catch (JSONException e) {
-            log.info("code 확인 불가 오류 catch");
-            log.info(e.toString());
+
+            log.info("transcribe 요청 id : " + jsonObject.getString("id"));
+
+            stopPolling = false;
+            transcribeId = jsonObject.getString("id");
+            String finalResponse = startPolling();
+
+            JSONObject finalResponseJson = new JSONObject(finalResponse);
+
+            if (!finalResponseJson.has("results") || !finalResponseJson.getJSONObject("results").has("utterances")) {
+                log.error("STT 변환 결과에 utterances 키가 없습니다.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "STT 변환 결과에 utterances 키가 없습니다.");
+            }
+
+            JSONArray utterances = finalResponseJson.getJSONObject("results").getJSONArray("utterances");
+            StringBuilder transcribedText = new StringBuilder();
+
+            for (int i = 0; i < utterances.length(); i++) {
+                JSONObject utterance = utterances.getJSONObject(i);
+                transcribedText.append(utterance.getString("msg")).append(" ");
+            }
+
+            if (transcribedText.length() < 30) {
+                log.error("대화내용이 짧아서 분석할 수 없습니다.");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "대화내용이 짧아서 분석할 수 없습니다.");
+            }
+
+            // JSON 응답을 파싱하여 'verified' 필드를 리스트로 변경
+            JSONObject responseJson = new JSONObject(finalResponse);
+            JSONObject results = responseJson.getJSONObject("results");
+
+            // 'verified' 필드가 리스트 형식이 아닌 경우 리스트로 변경
+            if (!results.has("verified") || !(results.get("verified") instanceof List)) {
+                List<Boolean> verifiedList = new ArrayList<>();
+                verifiedList.add(results.getBoolean("verified"));
+                results.put("verified", verifiedList);
+            }
+
+            // FastAPI로 데이터 전송
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<String> request = new HttpEntity<>(responseJson.toString(), headers);
+            ResponseEntity<String> fastApiResponse = restTemplate.postForEntity(fastApiUrl + "/stt", request, String.class);
+
+            // FastAPI 응답을 로그로 출력
+            log.info("FastAPI 응답: " + fastApiResponse.getBody());
+
+            return fastApiResponse;
+        } else {
+            log.error("STT 응답이 없습니다.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "STT 응답이 없습니다.");
         }
-        log.info("transcribe 요청 id : " + jsonObject.getString("id"));
-
-        stopPolling = false;
-        transcribeId = jsonObject.getString("id");
-        String finalResponse = startPolling();
-
-        // JSON 응답을 파싱하여 'verified' 필드를 리스트로 변경
-        JSONObject responseJson = new JSONObject(finalResponse);
-        JSONObject results = responseJson.getJSONObject("results");
-
-        // 'verified' 필드가 리스트 형식이 아닌 경우 리스트로 변경
-        if (!results.has("verified") || !(results.get("verified") instanceof List)) {
-            List<Boolean> verifiedList = new ArrayList<>();
-            verifiedList.add(results.getBoolean("verified"));
-            results.put("verified", verifiedList);
-        }
-
-        // FastAPI로 데이터 전송
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<String> request = new HttpEntity<>(responseJson.toString(), headers);
-        ResponseEntity<String> fastApiResponse = restTemplate.postForEntity(fastApiUrl + "/stt", request, String.class);
-
-        // FastAPI 응답을 로그로 출력
-        log.info("FastAPI 응답: " + fastApiResponse.getBody());
-
-        return fastApiResponse;
     }
+
 
     // 5초마다 실행 (주기는 필요에 따라 조절)
     public String startPolling() throws InterruptedException {
