@@ -88,7 +88,7 @@ public class SecurityConfig {
             "/audio-stream",
             "/api/transcribe/websocket",
             //board
-            "/api/posts",
+            "/api/posts/**",
             //관리자
             "/getAllUser",
             "/admin/changeStatusBan",
