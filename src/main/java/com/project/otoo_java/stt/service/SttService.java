@@ -177,13 +177,15 @@ public class SttService {
             log.info("FastAPI 응답: " + fastApiResponse.getStatusCode());
             log.info("FastAPI 응답 본문: " + fastApiResponse.getBody());
 
-            if (usercode != null) {
-                SttTalksDto sttTalksDto = new SttTalksDto();
-                sttTalksDto.setSttUsersCode(usercode);
-                sttTalksDto.setSttTalksMessage(transcribedText.toString());
-                sttTalksDto.setSttTalksResult(finalResponseJson.toString());
-                insertSttTalks(sttTalksDto);
-            }
+            // DTO에 데이터 저장
+            SttTalksDto sttTalksDto = SttTalksDto.builder()
+                    .SttUsersCode(usercode) // usercode가 null일 수 있음
+                    .SttTalksMessage(transcribedText.toString())
+                    .SttTalksResult(finalResponseJson.toString())
+                    .build();
+
+            // 데이터베이스에 저장
+            insertSttTalks(sttTalksDto);
 
             return new ResponseEntity<>(fastApiResponse.getBody(), HttpStatus.OK);
         } else {
@@ -196,7 +198,7 @@ public class SttService {
         SttTalks entity = SttTalks.builder()
                 .SttTalksMessage(sttTalksDto.getSttTalksMessage())
                 .SttTalksResult(sttTalksDto.getSttTalksResult())
-                .SttUsersCode(sttTalksDto.getSttUsersCode())
+                .SttUsersCode(sttTalksDto.getSttUsersCode()) // null이 올 수 있음
                 .build();
         sttTalksRepository.save(entity);
     }

@@ -19,7 +19,7 @@ public class SttController {
     }
 
     @PostMapping(value = "/transcribe/file", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> transcribeFile(@RequestPart("file") MultipartFile file, @RequestPart("usercode") String usercode) throws IOException, InterruptedException {
+    public ResponseEntity<String> transcribeFile(@RequestPart("file") MultipartFile file, @RequestPart(value = "usercode", required = false) String usercode) throws IOException, InterruptedException {
         return sttService.transcribeFile(file, usercode);
     }
 
