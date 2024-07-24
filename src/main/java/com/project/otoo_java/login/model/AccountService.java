@@ -159,16 +159,18 @@ public class AccountService {
         String responseBody = response.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
-
+        log.info(jsonNode.get("properties").get("nickname").toString().substring(1,1));
         Long id = jsonNode.get("id").asLong();
         log.info("id = " + id);
 
-        String uuid = UUID.randomUUID().toString();
+        String name = jsonNode.get("properties").get("nickname").toString();
+        name = name.substring(1, name.length()-1);
         String pwd = bCryptPasswordEncoder.encode(UUID.randomUUID().toString());
 
         return UsersDto.builder()
                 .usersPw(pwd)
-                .usersEmail(uuid)
+                .usersEmail(id.toString())
+                .usersName(name)
                 .usersId(id.toString())
                 .usersRole("ROLE_USER")
                 .oAuthProvider(OAuthProvider.KAKAO)
@@ -351,7 +353,7 @@ public class AccountService {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("client_id", googleClientId);
         map.add("client_secret", googleClientSecret);
-        map.add("redirect_uri", googleRedirectUri);
+        map.add("redirect_uri", "https://ai.otoo.kr/googlelogin");
         map.add("grant_type", "authorization_code");
         map.add("code", code);
 
