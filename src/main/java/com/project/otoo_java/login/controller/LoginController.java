@@ -89,6 +89,7 @@ public class LoginController {
 
         return ResponseEntity.ok("재발급");
     }
+
     @PostMapping("/logoutUser")
     public ResponseEntity<?> logout(HttpServletRequest request) {
         String email = request.getHeader("Authorization");
