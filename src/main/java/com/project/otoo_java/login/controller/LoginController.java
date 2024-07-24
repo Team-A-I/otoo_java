@@ -93,6 +93,13 @@ public class LoginController {
         String email = request.getHeader("Authorization");
         log.info("email: " + email);
         redisTemplate.delete("JWT_TOKEN:" + email);
+
+        // 세션 무효화
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
