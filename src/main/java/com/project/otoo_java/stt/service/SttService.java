@@ -1,5 +1,9 @@
 package com.project.otoo_java.stt.service;
 
+import com.project.otoo_java.stt.dto.SttTalksDto;
+import com.project.otoo_java.stt.entity.SttTalks;
+import com.project.otoo_java.stt.repository.SttTalksRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import okio.ByteString;
@@ -22,8 +26,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -32,7 +34,10 @@ import java.util.logging.Logger;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class SttService {
+
+    private final SttTalksRepository sttTalksRepository;
 
     private boolean stopPolling = false;
     private String transcribeId = null;
@@ -70,7 +75,7 @@ public class SttService {
         return jsonObject.getString("access_token");
     }
 
-    public ResponseEntity<String> transcribeFile(MultipartFile multipartFile) throws IOException, InterruptedException {
+    public ResponseEntity<String> transcribeFile(MultipartFile multipartFile, String usercode) throws IOException, InterruptedException {
         accessToken = getAccessToken();
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://openapi.vito.ai/v1")
@@ -169,15 +174,34 @@ public class SttService {
             ResponseEntity<String> fastApiResponse = restTemplate.postForEntity(fastApiUrl + "/stt", request, String.class);
 
             // FastAPI 응답을 로그로 출력
-            log.info("FastAPI 응답: " + fastApiResponse.getBody());
+            log.info("FastAPI 응답: " + fastApiResponse.getStatusCode());
+            log.info("FastAPI 응답 본문: " + fastApiResponse.getBody());
 
-            return fastApiResponse;
+            // DTO에 데이터 저장
+            SttTalksDto sttTalksDto = SttTalksDto.builder()
+                    .SttUsersCode(usercode) // usercode가 null일 수 있음
+                    .SttTalksMessage(transcribedText.toString())
+                    .SttTalksResult(finalResponseJson.toString())
+                    .build();
+
+            // 데이터베이스에 저장
+            insertSttTalks(sttTalksDto);
+
+            return new ResponseEntity<>(fastApiResponse.getBody(), HttpStatus.OK);
         } else {
             log.error("STT 응답이 없습니다.");
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "STT 응답이 없습니다.");
         }
     }
 
+    private void insertSttTalks(SttTalksDto sttTalksDto) {
+        SttTalks entity = SttTalks.builder()
+                .SttTalksMessage(sttTalksDto.getSttTalksMessage())
+                .SttTalksResult(sttTalksDto.getSttTalksResult())
+                .SttUsersCode(sttTalksDto.getSttUsersCode()) // null이 올 수 있음
+                .build();
+        sttTalksRepository.save(entity);
+    }
 
     // 5초마다 실행 (주기는 필요에 따라 조절)
     public String startPolling() throws InterruptedException {
