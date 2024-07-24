@@ -18,10 +18,9 @@ public class SttController {
         this.sttService = sttService;
     }
 
-
     @PostMapping(value = "/transcribe/file", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> transcribeFile(@RequestPart MultipartFile file) throws IOException, InterruptedException {
-        return sttService.transcribeFile(file);
+    public ResponseEntity<String> transcribeFile(@RequestPart("file") MultipartFile file, @RequestPart("usercode") String usercode) throws IOException, InterruptedException {
+        return sttService.transcribeFile(file, usercode);
     }
 
     @PostMapping(value = "/transcribe/websocket", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
