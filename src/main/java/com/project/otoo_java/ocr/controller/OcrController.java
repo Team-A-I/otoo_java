@@ -1,6 +1,9 @@
 package com.project.otoo_java.ocr.controller;
 
-import com.project.otoo_java.analyze.service.AnalyzeService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.otoo_java.ocr.dto.OcrDto;
+import com.project.otoo_java.ocr.service.OcrService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,36 +22,45 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 @Slf4j
 @RestController
 @RequestMapping("/api")
 public class OcrController {
+
+    private final OcrService ocrService;
+
     @Value("${FASTAPI_URL}")
     private String FASTAPI_URL;
     private static final Logger logger = LoggerFactory.getLogger(OcrController.class);
 
+    public OcrController(OcrService ocrService) { // 생성자 추가
+        this.ocrService = ocrService;
+    }
+
     @PostMapping("/conflict/ocr")
-    public ResponseEntity<String> ocrConflict(@RequestParam("file") MultipartFile[] files) {
-        return sendPostRequestToFastAPI(files, "conflict");
+    public ResponseEntity<String> ocrConflict(@RequestParam("file") MultipartFile[] files, @RequestParam("usercode") String usercode) {
+        return sendPostRequestToFastAPI(files, "conflict", usercode);
     }
 
     @PostMapping("/love/ocr")
-    public ResponseEntity<String> ocrLove(@RequestParam("file") MultipartFile[] files) {
-        return sendPostRequestToFastAPI(files, "love");
+    public ResponseEntity<String> ocrLove(@RequestParam("file") MultipartFile[] files, @RequestParam("usercode") String usercode) {
+        return sendPostRequestToFastAPI(files, "love", usercode);
     }
 
     @PostMapping("/friendship/ocr")
-    public ResponseEntity<String> ocrFriendship(@RequestParam("file") MultipartFile[] files) {
-        return sendPostRequestToFastAPI(files, "friendship");
+    public ResponseEntity<String> ocrFriendship(@RequestParam("file") MultipartFile[] files, @RequestParam("usercode") String usercode) {
+        return sendPostRequestToFastAPI(files, "friendship", usercode);
     }
 
-    private ResponseEntity<String> sendPostRequestToFastAPI(MultipartFile[] files, String type) {
+    private ResponseEntity<String> sendPostRequestToFastAPI(MultipartFile[] files, String type, String usercode) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("type", type);
+        body.add("usercode", usercode);
         try {
             for (MultipartFile file : files) {
                 ByteArrayResource fileResource = new ByteArrayResource(file.getBytes()) {
@@ -57,7 +69,7 @@ public class OcrController {
                         return file.getOriginalFilename();
                     }
                 };
-                body.add("files", fileResource);  // 여기서 "file" 대신 "files"로 변경
+                body.add("files", fileResource);
             }
         } catch (IOException e) {
             logger.error("파일 변환 오류: {}", e.getMessage());
@@ -74,6 +86,18 @@ public class OcrController {
                     String.class
             );
             logger.info("FastAPI 응답 성공: {}", response.getStatusCode());
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonResponse = objectMapper.readTree(response.getBody());
+            String responseContent = jsonResponse.path("response").asText();
+            JsonNode parsedResponse = objectMapper.readTree(responseContent.replace("```json\n", "").replace("```", ""));
+
+            OcrDto ocrDto = new OcrDto();
+            ocrDto.setOcrUsersCode(usercode);
+            ocrDto.setOcrTalksMessage(files.toString());
+            ocrDto.setOcrTalksResult(parsedResponse.toString());
+
+//            ocrService.insertOcr(ocrDto);
+//            지금은 저장 안함 7/26
             return response;
 
         } catch (HttpClientErrorException e) {
