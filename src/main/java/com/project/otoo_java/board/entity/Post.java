@@ -16,9 +16,9 @@ import java.util.Date;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String title;
-    private String author;
-    private String date;
-    private String description;
+    private Long postId;
+    private String postTitle;
+    private String postAuthor;
+    private String postDate;
+    private String postDescription;
 }
