@@ -6,7 +6,7 @@
 - Test ID : otoo
 - Test PW : 1234
 - RestAPI REPO URL : https://github.com/Team-A-I/otoo_java
-- FastAPI REPO URL : [https://github.com/Team-A-I/otoo_react](https://github.com/Team-A-I/otoo_python_llm)
+- FastAPI REPO URL : https://github.com/Team-A-I/otoo_python_llm
 
 <br>
 
