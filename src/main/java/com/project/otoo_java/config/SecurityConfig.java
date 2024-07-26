@@ -143,7 +143,7 @@ public class SecurityConfig {
                                 // 인증없이 허용 URL
                                 .requestMatchers(PERMIT_URL_ARRAY).permitAll()
                                 // 특정 URL 허용
-                                .requestMatchers("/users/**").hasRole("USER")
+                                .requestMatchers("/user/**").hasRole("USER")
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated() // 나머지 요청에 대해 인증 필요
                 );
