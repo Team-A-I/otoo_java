@@ -20,8 +20,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -34,22 +32,22 @@ public class OcrController {
     private String FASTAPI_URL;
     private static final Logger logger = LoggerFactory.getLogger(OcrController.class);
 
-    public OcrController(OcrService ocrService) { // 생성자 추가
+    public OcrController(OcrService ocrService) {
         this.ocrService = ocrService;
     }
 
     @PostMapping("/conflict/ocr")
-    public ResponseEntity<String> ocrConflict(@RequestParam("file") MultipartFile[] files, @RequestParam("usercode") String usercode) {
+    public ResponseEntity<String> ocrConflict(@RequestParam("file") MultipartFile[] files, @RequestParam(value = "usercode", required = false) String usercode) {
         return sendPostRequestToFastAPI(files, "conflict", usercode);
     }
 
     @PostMapping("/love/ocr")
-    public ResponseEntity<String> ocrLove(@RequestParam("file") MultipartFile[] files, @RequestParam("usercode") String usercode) {
+    public ResponseEntity<String> ocrLove(@RequestParam("file") MultipartFile[] files, @RequestParam(value = "usercode", required = false) String usercode) {
         return sendPostRequestToFastAPI(files, "love", usercode);
     }
 
     @PostMapping("/friendship/ocr")
-    public ResponseEntity<String> ocrFriendship(@RequestParam("file") MultipartFile[] files, @RequestParam("usercode") String usercode) {
+    public ResponseEntity<String> ocrFriendship(@RequestParam("file") MultipartFile[] files, @RequestParam(value = "usercode", required = false) String usercode) {
         return sendPostRequestToFastAPI(files, "friendship", usercode);
     }
 
@@ -60,7 +58,9 @@ public class OcrController {
 
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("type", type);
-        body.add("usercode", usercode);
+        if (usercode != null && !usercode.isEmpty()) {
+            body.add("usercode", usercode);
+        }
         try {
             for (MultipartFile file : files) {
                 ByteArrayResource fileResource = new ByteArrayResource(file.getBytes()) {
@@ -96,8 +96,8 @@ public class OcrController {
             ocrDto.setOcrTalksMessage(files.toString());
             ocrDto.setOcrTalksResult(parsedResponse.toString());
 
-//            ocrService.insertOcr(ocrDto);
-//            지금은 저장 안함 7/26
+            // ocrService.insertOcr(ocrDto);
+            // 지금은 저장 안함 7/26
             return response;
 
         } catch (HttpClientErrorException e) {
