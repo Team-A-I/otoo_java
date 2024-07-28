@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +73,7 @@ public class LoginController {
     @Operation(summary = "구글 로그인 콜백", description = "구글 로그인 콜백 API")
     @GetMapping("/googleLogin/callbacks")
     public ResponseEntity<?> googleLogin(@RequestParam("code") String code, HttpServletResponse res) throws Exception {
-
+        log.info(code);
         try {
             UserResponseDto userResponseDto = accountService.googleLogin(code, res);
             return ResponseEntity.ok(userResponseDto);
@@ -88,11 +89,20 @@ public class LoginController {
 
         return ResponseEntity.ok("재발급");
     }
+
     @PostMapping("/logoutUser")
     public ResponseEntity<?> logout(HttpServletRequest request) {
         String email = request.getHeader("Authorization");
         log.info("email: " + email);
         redisTemplate.delete("JWT_TOKEN:" + email);
+
+        // 세션 무효화
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 }

@@ -111,9 +111,23 @@ public class UsersService {
         }
     }
 
-    //회원 상태 변경
+    // 유저 밴 상태 변경(밴X -> 밴O)
     @Transactional
-    public void updateStatus(String usersCode) {
+    public void updateStatusBan(String usersCode) {
+
+        Users users = usersRepository.findById(usersCode).orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다."));
+
+        if (users.getUsersBan().equals("N")) {
+            users.setUsersBan("Y");
+        } else {
+            users.setUsersBan("N");
+        }
+        usersRepository.updateStatus(usersCode, users.getUsersBan());
+    }
+
+    // 유저 밴 상태 변경(밴O -> 밴X)
+    @Transactional
+    public void updateStatusNotBan(String usersCode) {
 
         Users users = usersRepository.findById(usersCode).orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다."));
 
@@ -123,6 +137,17 @@ public class UsersService {
             users.setUsersBan("Y");
         }
         usersRepository.updateStatus(usersCode, users.getUsersBan());
+    }
 
+    // 성별 선택하면, 그 성별에 맞는 User 전체 조회
+    @Transactional
+    public List<Users> usersGenderOneList(String usersGender) {
+        return usersRepository.findByUsersGender(usersGender);
+    }
+
+    // 계정 상태 선택하면, 그 상태에 맞는 User 전체 조회
+    @Transactional
+    public List<Users> usersBanOneList(String usersBan) {
+        return usersRepository.findByUsersBan(usersBan);
     }
 }

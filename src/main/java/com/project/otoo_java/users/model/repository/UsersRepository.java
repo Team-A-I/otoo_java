@@ -25,8 +25,12 @@ public interface UsersRepository extends JpaRepository<Users, String> {
     @Query("UPDATE Users m Set m.usersBan = :usersBan WHERE m.usersCode = :usersCode")
     void updateStatus(@Param("usersCode") String usersId, @Param("usersBan") String usersBan);
 
-
-
     List<Users> findByUsersRoleNot(String usersRole);
+
+    // usersGender 남자, 여자 선택에 사용할 Query
+    List<Users> findByUsersGender(String usersGender);
+
+    // usersBan Y, N 선택에 사용할 Query
+    List<Users> findByUsersBan(String usersBan);
 
 }

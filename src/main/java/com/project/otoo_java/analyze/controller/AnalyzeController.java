@@ -93,7 +93,8 @@ public class AnalyzeController {
 
                 analyzeDto.setTalksPlayer(player1 + ", " + player2);
                 analyzeDto.setTalksResult(parsedResponse.toString());
-                analyzeService.insertAnalyze(analyzeDto);
+//                analyzeService.insertAnalyze(analyzeDto);
+//            지금은 저장 안함 7/24
             return response;
 
         } catch (HttpClientErrorException e) {

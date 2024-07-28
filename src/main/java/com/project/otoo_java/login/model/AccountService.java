@@ -99,15 +99,13 @@ public class AccountService {
                 throw new BadCredentialsException("비밀번호가 맞지 않습니다.");
             }
 
-            if (usersEntity.getUsersBan().equals("1")) {
+            if (usersEntity.getUsersBan().equals("Y")) {
                 throw new BadCredentialsException("정지된 회원입니다");
-            } else if (usersEntity.getUsersBan().equals("2")) {
-                throw new BadCredentialsException("승인 대기중인 회원입니다");
             }
 
             TokenDto tokenDto = jwtUtil.createAllToken(usersEntity.getUsersEmail());
             setHeader(res, tokenDto);
-            redisTemplate.opsForValue().set("JWT_TOKEN:" + usersEntity.getUsersEmail(), tokenDto);
+            redisTemplate.opsForValue().set("JWT_TOKEN:" + usersEntity.getUsersEmail(), tokenDto.getRefreshToken(),7 * 24 * 60 * 60 * 1000L, java.util.concurrent.TimeUnit.MINUTES);
             return new UserResponseDto(usersEntity);
 
         } catch (NotFoundException e) {
@@ -129,7 +127,7 @@ public class AccountService {
 
         TokenDto tokenDto = jwtUtil.createAllToken(users.getUsersEmail());
         setHeader(res, tokenDto);
-        redisTemplate.opsForValue().set("JWT_TOKEN:" + users.getUsersEmail(), tokenDto);
+        redisTemplate.opsForValue().set("JWT_TOKEN:" + users.getUsersEmail(), tokenDto.getRefreshToken(),7 * 24 * 60 * 60 * 1000L, java.util.concurrent.TimeUnit.MINUTES);
 
         return new UserResponseDto(users);
     }
@@ -159,16 +157,18 @@ public class AccountService {
         String responseBody = response.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
-
+        log.info(jsonNode.get("properties").get("nickname").toString().substring(1,1));
         Long id = jsonNode.get("id").asLong();
         log.info("id = " + id);
 
-        String uuid = UUID.randomUUID().toString();
+        String name = jsonNode.get("properties").get("nickname").toString();
+        name = name.substring(1, name.length()-1);
         String pwd = bCryptPasswordEncoder.encode(UUID.randomUUID().toString());
 
         return UsersDto.builder()
                 .usersPw(pwd)
-                .usersEmail(uuid)
+                .usersEmail(id.toString())
+                .usersName(name)
                 .usersId(id.toString())
                 .usersRole("ROLE_USER")
                 .oAuthProvider(OAuthProvider.KAKAO)
@@ -197,7 +197,7 @@ public class AccountService {
                     .usersId(usersDto.getUsersId())
                     .build();
 
-            usersEntity.setUsersBan("0");
+            usersEntity.setUsersBan("N");
 
             Users savedMember = usersRepository.save(usersEntity);
 
@@ -215,7 +215,7 @@ public class AccountService {
 
         TokenDto tokenDto = jwtUtil.createAllToken(users.getUsersEmail());
         setHeader(res, tokenDto);
-        redisTemplate.opsForValue().set("JWT_TOKEN:" + users.getUsersEmail(), tokenDto);
+        redisTemplate.opsForValue().set("JWT_TOKEN:" + users.getUsersEmail(), tokenDto.getRefreshToken(),7 * 24 * 60 * 60 * 1000L, java.util.concurrent.TimeUnit.MINUTES);
 
         return new UserResponseDto(users);
     }
@@ -335,7 +335,7 @@ public class AccountService {
 
         TokenDto tokenDto = jwtUtil.createAllToken(users.getUsersEmail());
         setHeader(res, tokenDto);
-        redisTemplate.opsForValue().set("JWT_TOKEN:" + users.getUsersEmail(), tokenDto);
+        redisTemplate.opsForValue().set("JWT_TOKEN:" + users.getUsersEmail(), tokenDto.getRefreshToken(),7 * 24 * 60 * 60 * 1000L, java.util.concurrent.TimeUnit.MINUTES);
 
         return new UserResponseDto(users);
     }
@@ -351,7 +351,7 @@ public class AccountService {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("client_id", googleClientId);
         map.add("client_secret", googleClientSecret);
-        map.add("redirect_uri", googleRedirectUri);
+        map.add("redirect_uri", "https://ai.otoo.kr/googlelogin");
         map.add("grant_type", "authorization_code");
         map.add("code", code);
 
