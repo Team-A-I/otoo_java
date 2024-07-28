@@ -6,7 +6,7 @@ import com.project.otoo_java.analyze.repository.AnalyzeRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+//배포
 @RequiredArgsConstructor
 @Service
 @Transactional
