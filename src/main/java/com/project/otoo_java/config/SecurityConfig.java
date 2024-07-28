@@ -94,7 +94,9 @@ public class SecurityConfig {
             "/admin/changeStatusBan",
             "/admin/changeStatusNotBan",
             "/admin/getGenderOne/{usersGender}",
-            "/admin/getBanOne/{usersBan}"
+            "/admin/getBanOne/{usersBan}",
+            //헬스체크
+            "/actuator/health"
     };
 
     // BCryptPasswordEncoder 빈 등록
