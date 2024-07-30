@@ -149,7 +149,7 @@ public class SttService {
                 transcribedText.append(utterance.getString("msg")).append(" ");
             }
 
-            if (transcribedText.length() < 30) {
+            if (transcribedText.length() < 10) {
                 log.error("대화내용이 짧아서 분석할 수 없습니다.");
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "대화내용이 짧아서 분석할 수 없습니다.");
             }
