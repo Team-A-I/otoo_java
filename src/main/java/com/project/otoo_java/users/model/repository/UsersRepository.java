@@ -33,4 +33,12 @@ public interface UsersRepository extends JpaRepository<Users, String> {
     // usersBan Y, N 선택에 사용할 Query
     List<Users> findByUsersBan(String usersBan);
 
+    //마이페이지 - 유저 조회
+    Optional<Users> findByUsersCode(String usersCode);
+
+    //마이페이지 - 유저 삭제
+    void deleteByUsersCode(String usersCode);
+
+    //마이페이지 - 유저 수정
+    //Optional<Users> updateUsers(Users users);
 }

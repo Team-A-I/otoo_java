@@ -3,6 +3,7 @@ package com.project.otoo_java.ocr.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.otoo_java.ocr.dto.OcrDto;
+import com.project.otoo_java.ocr.entity.OcrTalks;
 import com.project.otoo_java.ocr.service.OcrService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -20,6 +21,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -49,6 +52,26 @@ public class OcrController {
     @PostMapping("/friendship/ocr")
     public ResponseEntity<String> ocrFriendship(@RequestParam("file") MultipartFile[] files, @RequestParam(value = "usercode", required = false) String usercode) {
         return sendPostRequestToFastAPI(files, "friendship", usercode);
+    }
+
+    // 관리자가 일반 회원들이 진행한 모든 테스트 결과 조회
+    @GetMapping("/admin/getAllOcr")
+    public List<OcrTalks> getAllOcr(){
+        return ocrService.getAllResult();
+    }
+
+    // 일반 유저가 진행한 모든 갈등테스트(이미지) 전체 결과 조회
+    @GetMapping("/user/getOneOcrAll/{ocrUsersCode}")
+    public List<OcrTalks> getOneOcrAll(@PathVariable(value="ocrUsersCode") String ocrUsersCode){
+        return ocrService.getUserResultAll(ocrUsersCode);
+    }
+
+    // 일반 유저가 진행한 갈등테스트(이미지) 결과 1개 조회 -> 결과 페이지 나타내기 + 시간 선택하면 조회
+    @GetMapping("/user/getOneOcr/{ocrTalksCode}")
+    public Optional<OcrTalks> getOneOcr(
+            @PathVariable(value="ocrTalksCode")
+            Long ocrTalksCode){
+        return ocrService.getUserResultOne(ocrTalksCode);
     }
 
     private ResponseEntity<String> sendPostRequestToFastAPI(MultipartFile[] files, String type, String usercode) {

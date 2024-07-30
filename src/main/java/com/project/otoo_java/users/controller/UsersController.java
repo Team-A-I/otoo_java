@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -101,5 +102,23 @@ public class UsersController {
         log.info("유저 밴 상태 1개 선택 시 조회 메소드 시작");
         log.info(usersBan);
         return usersService.usersBanOneList(usersBan);
+    }
+
+    // 마이페이지 - 로그인한 계정 정보 조회 by usersCode
+    @GetMapping("/user/getOneUser/{usersCode}")
+    public Optional<Users> userOneList(@PathVariable(value="usersCode") String usersCode){
+        return usersService.getOneUser(usersCode);
+    }
+
+    // 마이페이지 - 로그인한 계정 정보 조회 by usersCode
+    @GetMapping("/user/deleteUser/{usersCode}")
+    public void userDelete(@PathVariable(value="usersCode") String usersCode){
+        usersService.deleteUser(usersCode);
+    }
+
+    // 마이페이지 - 로그인한 계정 정보 수정
+    @PostMapping("/user/changeUser")
+    public Users userUpdate(@RequestBody Users user){
+        return usersService.updateUser(user);
     }
 }

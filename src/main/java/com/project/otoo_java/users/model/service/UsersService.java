@@ -11,6 +11,7 @@ import com.project.otoo_java.users.model.dto.UsersDto;
 import com.project.otoo_java.users.model.entity.Users;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -149,5 +150,23 @@ public class UsersService {
     @Transactional
     public List<Users> usersBanOneList(String usersBan) {
         return usersRepository.findByUsersBan(usersBan);
+    }
+
+    // 마이페이지 - 유저 조회
+    @Transactional
+    public Optional<Users> getOneUser(String usersCode) {
+        return usersRepository.findByUsersCode(usersCode);
+    }
+
+    // 마이페이지 - 유저 삭제
+    @Transactional
+    public void deleteUser(String usersCode) {
+        usersRepository.deleteByUsersCode(usersCode);
+    }
+
+    // 마이페이지 - 유저 수정
+    @Transactional
+    public Users updateUser(Users user) {
+        return usersRepository.save(user);
     }
 }

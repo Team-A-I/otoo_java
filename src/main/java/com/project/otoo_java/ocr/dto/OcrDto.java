@@ -37,7 +37,7 @@ public class OcrDto {
                 .OcrTalksDate(dto.getOcrTalksDate())
                 .OcrTalksMessage(dto.getOcrTalksMessage())
                 .OcrTalksResult(dto.getOcrTalksResult())
-                .OcrUsersCode(dto.getOcrUsersCode())
+                .ocrUsersCode(dto.getOcrUsersCode())
                 .build();
     }
 

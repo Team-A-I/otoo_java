@@ -3,6 +3,7 @@ package com.project.otoo_java.analyze.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.otoo_java.analyze.dto.AnalyzeDto;
+import com.project.otoo_java.analyze.entity.Talks;
 import com.project.otoo_java.analyze.service.AnalyzeService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +21,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -49,6 +52,24 @@ public class AnalyzeController {
     @PostMapping("/friendship/analysis")
     public ResponseEntity<String> analyzeFriendship(@RequestBody Map<String, Object> jsonContent) {
         return sendPostRequestToFastAPI(jsonContent, "friendship");
+    }
+
+    // 관리자가 일반 회원들이 진행한 모든 테스트 결과 조회
+    @GetMapping("/admin/getAllAnalysis")
+    public List<Talks> getAllAnalysis(){
+        return analyzeService.getAllResult();
+    }
+
+    // 일반 유저가 진행한 모든 갈등테스트-텍스트 결과 전체 조회
+    @GetMapping("/user/getOneAnalysisAll/{usersCode}")
+    public List<Talks> getOneAnalysisAll(@PathVariable(value="usersCode") String usersCode){
+        return analyzeService.getUserResultAll(usersCode);
+    }
+
+    // 일반 유저가 진행한 갈등테스트-텍스트 결과 1개 조회
+    @GetMapping("/user/getOneAnalysis/{talksCode}")
+    public Optional<Talks> getOneAnalysis(@PathVariable(value="talksCode") Long talksCode){
+        return analyzeService.getUserResultOne(talksCode);
     }
 
     private ResponseEntity<String> sendPostRequestToFastAPI(Map<String, Object> jsonContent, String type) {
