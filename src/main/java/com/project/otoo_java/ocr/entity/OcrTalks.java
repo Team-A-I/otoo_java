@@ -14,6 +14,7 @@ import java.util.Date;
 @Builder
 @Entity
 public class OcrTalks {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long OcrTalksCode;
@@ -24,7 +25,7 @@ public class OcrTalks {
     @Lob
     @Column(columnDefinition = "TEXT")
     private String OcrTalksResult;
-    private String OcrUsersCode;
+    private String ocrUsersCode;
 
     @PrePersist
     protected void onCreate() {

@@ -28,6 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,6 +52,21 @@ public class SttService {
 
     @Value("${FASTAPI_URL}")
     String fastApiUrl;
+
+    // 전체 회원의 분석결과 전체 가져오기 - 관리자용
+    public List<SttTalks> getAllResult(){
+        return sttTalksRepository.findAll();
+    }
+
+    // 특정 회원의 분석결과 전체 가져오기 - 일반회원용
+    public List<SttTalks> getUserResultAll(String sttUsersCode){
+        return sttTalksRepository.findAllBySttUsersCode(sttUsersCode);
+    }
+
+    // 특정 회원의 분석결과 1개 가져오기 - 일반회원용
+    public Optional<SttTalks> getUserResultOne(Long sttTalksCode){
+        return sttTalksRepository.findById(sttTalksCode);
+    }
 
     public String getAccessToken() {
         WebClient webClient = WebClient.builder()
@@ -198,7 +214,7 @@ public class SttService {
         SttTalks entity = SttTalks.builder()
                 .SttTalksMessage(sttTalksDto.getSttTalksMessage())
                 .SttTalksResult(sttTalksDto.getSttTalksResult())
-                .SttUsersCode(sttTalksDto.getSttUsersCode()) // null이 올 수 있음
+                .sttUsersCode(sttTalksDto.getSttUsersCode()) // null이 올 수 있음
                 .build();
         sttTalksRepository.save(entity);
     }

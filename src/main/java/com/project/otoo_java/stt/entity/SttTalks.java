@@ -24,7 +24,7 @@ public class SttTalks {
     @Lob
     @Column(columnDefinition = "TEXT")
     private String SttTalksResult;
-    private String SttUsersCode;
+    private String sttUsersCode;
 
     @PrePersist
     protected void onCreate() {

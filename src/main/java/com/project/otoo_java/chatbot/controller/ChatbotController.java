@@ -1,6 +1,7 @@
 package com.project.otoo_java.chatbot.controller;
 import com.google.api.Authentication;
 import com.project.otoo_java.chatbot.model.dto.EmotionReportsDto;
+import com.project.otoo_java.chatbot.model.entity.EmotionReports;
 import com.project.otoo_java.chatbot.model.service.ChatbotService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 @Slf4j
 @RequiredArgsConstructor
 @CrossOrigin
@@ -100,5 +103,24 @@ public class ChatbotController {
         }
     }
 
+    // 관리자가 일반 회원들이 진행한 모든 테스트 결과 조회
+    @GetMapping("/admin/getAllChatbot")
+    public List<EmotionReports> getAllChatbot(){
+        return chatbotService.getAllResult();
+    }
+
+    // 일반 유저가 진행한 모든 챗봇 결과 조회
+    @GetMapping("/user/getOneChatbotAll/{usersCode}")
+    public List<EmotionReports> getOneChatbotAll(@PathVariable(value="usersCode") String usersCode){
+        return chatbotService.getUserResultAll(usersCode);
+    }
+
+    // 일반 유저가 진행한 챗봇 결과 1개 조회
+    @GetMapping("/user/getOneChatbot/{emotionReportCode}")
+    public Optional<EmotionReports> getOneChatbot(
+            @PathVariable(value="emotionReportCode")
+            Long emotionReportCode){
+        return chatbotService.getUserResultOne(emotionReportCode);
+    }
 
 }
