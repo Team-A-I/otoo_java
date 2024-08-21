@@ -3,7 +3,7 @@
 이 프로젝트는 다양한 RESTful API를 제공하는 서버 애플리케이션입니다. <br/> 
 주요 기능으로는 STT API, Redis, JWT 인증, JPA(ORM)를 사용한 데이터 관리 등이 포함됩니다.
 
-# 구조
+# 구 조
 ![Group 2245](https://github.com/user-attachments/assets/84960185-daeb-49fc-bf14-2e21980a05b0)
 
 
